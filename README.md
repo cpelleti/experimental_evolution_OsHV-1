@@ -7,7 +7,7 @@ This repository contains scripts that have been used to performed analysis of ex
 
 
 ## Support
-For help with this bioinformatics project, please reach out to Maude Jacquot (maude.jacquot@ifremer.fr), Germain Chevignon (germain.chevignon@ifremer.fr), or Benjamin Morga (benjamin.morga@ifremer.fr). They can assist with any questions, troubleshooting, or clarifications. Feel free to contact them directly or through the appropriate communication channels.
+For help with this bioinformatics project, please reach out to Camille Pelletier (camille.pelletier@ifremer.fr), Maude Jacquot (maude.jacquot@ifremer.fr), Germain Chevignon (germain.chevignon@ifremer.fr), or Benjamin Morga (benjamin.morga@ifremer.fr). They can assist with any questions, troubleshooting, or clarifications. Feel free to contact them directly or through the appropriate communication channels.
 
 ## Authors and acknowledgment
 Authors : Camille Pelletier, Nicole Faury, Mickaël Mege, Lionel Dégremont, Maelle Hattinguais, Jeremie Vidal-Dupiol, Germain Chevignon, Maude Jacquot, Benjamin Morga.
