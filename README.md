@@ -4,6 +4,7 @@ Mimicking of 30 years of M. gigas experimental infections with the virus OsHV-1 
 
 ## Description
 This repository contains scripts that have been used to performed analysis of experimental evolution datas from Pelletier et al, 2025.
+Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. NCBI:BioProject: PRJNA1216400.
 
 
 ## Support
