@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+#Author: Camille Pelletier
+#Created: 06/02/2025
+
+# This document presents all the code used to align raw reads to the artificial OsHV-1 major NR-consensus and get polymorphisms from vcf files 
+
+########################################
+##      Shell variables               ##
+########################################
+
+INPUT_REF=/path/to/folder/input/data/dna-sequence-raw
+GENOME=/path/to/folder/input/genome/Consensus_individuals_susp.fasta
+OUTPUT_BOWTIE=/path/to/folder/output/01_alignment_bowtie2
+OUTPUT_SAMTOOLS=/path/to/folder/output/02_bamfiles_samtools
+OUTPUT_FREEBAYES=/path/to/folder/output/03_variant_calling_freebayes
+OUTPUT_BCFTOOLS=/path/to/folder/output/04_vcffiles_bcftools
+OUTPUT_VT=/path/to/folder/output/05_normalization_vt
+
+########################################
+##      prepapre input file           ##
+########################################
+
+## create a list of fastq files for the following while loops
+
+ls -d "$INPUT_REF/"*"R1.fastq.gz"  > "$OUTPUT_BOWTIE/FASTQ_R1_FILES.txt"
+ls -d "$INPUT_REF/"*"R2.fastq.gz"  > "$OUTPUT_BOWTIE/FASTQ_R2_FILES.txt"
+
+paste -d' ' "$OUTPUT_BOWTIE/FASTQ_R1_FILES.txt" "$OUTPUT_BOWTIE/FASTQ_R2_FILES.txt" > "$OUTPUT_BOWTIE/FASTQ_FILES.txt"
+LIST_BOWTIE="$OUTPUT_BOWTIE/FASTQ_FILES.txt"
+
+########################################
+##     		Run tools             ##
+########################################
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 1 - Alignment of raw reads to the artificial consensus for each library using bowtie2 v2.4.5 (https://bowtie-bio.sourceforge.net/bowtie2/manual.shtml)
+
+bowtie2-build ${GENOME} ${GENOME}
+while IFS='' read -r line || [[ -n "$line" ]]; do
+    echo "${line}"
+   ## extract the name of both reads
+   read1=`echo "${line}" | awk '{print $1}'`
+   read2=`echo "${line}" | awk '{print $2}'`
+## get file name 
+fname=`echo "${read1}" | awk -F'/' '{print $10}' | awk -F'_R1.fastq.gz' '{print $1}' | awk -F'.' '{print $5}' `
+
+bowtie2 --end-to-end --no-unal -p "$NCPUS"  -x ${GENOME} -1 ${read1} -2 ${read2} -S "${OUTPUT_BOWTIE}"/"${fname}".sam 2>> "${OUTPUT_BOWTIE}"/bowtie.log
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 2 - create bam files, prepare them for variant calling and index them using samtools v1.16.1 (http://www.htslib.org/doc/samtools.html)
+
+##create fasta index
+samtools faidx $GENOME -o "$GENOME.fai"
+
+samtools view -@ "$NCPUS" -T "$GENOME" -b -o "${OUTPUT_BOWTIE}/${fname}.bam" ${OUTPUT_BOWTIE}/${fname}.sam 2>&1
+
+##create bam files with read groups in the header for illumina reads
+samtools addreplacerg -r ID:${fname} -r SM:${fname} -r PL:Illumina -r LB:Illumina -o ${OUTPUT_BOWTIE}/${fname}_rg.bam ${OUTPUT_BOWTIE}/${fname}.bam 2>&1
+
+##sort reads by position
+samtools sort -T "$GENOME" -o "${OUTPUT_SAMTOOLS}/${fname}_rg_sort.bam" -O BAM -@ "$NCPUS" "${OUTPUT_BOWTIE}/${fname}_rg.bam" 2>&1
+
+##index bam file
+samtools index -@ "$NCPUS" -b "${OUTPUT_SAMTOOLS}/${fname}_rg_sort.bam" 2>&1
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 3 - variant calling using freebayes v1.3.5 (https://github.com/freebayes/freebayes)
+
+freebayes -f "$GENOME" "${OUTPUT_SAMTOOLS}/${fname}_rg_sort.bam" --use-mapping-quality --min-repeat-entropy 1 --haplotype-length 0 --min-alternate-count 5  --pooled-continuous --hwe-priors-off --allele-balance-priors-off --gvcf >& ${OUTPUT_FREEBAYES}/${fname}_mapq_entropy_gvcf_alt5.vcf 2>> "${OUTPUT_FREEBAYES}/freebayes_mapq_entropy_alt5_gvcf.log" 
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 4 - process vcf files and produce statistics using bcftools v1.16 (https://samtools.github.io/bcftools/bcftools.html)
+
+## gzip vcf file
+bcftools view -O z -o ${OUTPUT_BCFTOOLS}/${fname}_mapq_entropy_gvcf_alt5.vcf.gz ${OUTPUT_FREEBAYES}/${fname}_mapq_entropy_gvcf_alt5.vcf
+
+## index vcf file 
+bcftools index --csi ${OUTPUT_BCFTOOLS}/${fname}_mapq_entropy_gvcf_alt5.vcf.gz
+
+## Produce global stats and get only stats about transitions and transversion for Figure 1
+bcftools stats ${OUTPUT_BCFTOOLS}/${fname}_mapq_entropy_gvcf_alt5.vcf.gz 
+
+grep "ST" ${OUTPUT_BCFTOOLS}/${fname}_mapq_entropy_gvcf_alt5.vcf.gz_stats | grep -v "#" > ${OUTPUT_BCFTOOLS}/${fname}_mapq_entropy_gvcf_alt5.vcf.gz_stats.tab_subsType.tab
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 5 - Normalize and decompose variants for each vcf file using vt v2015.11.10 (https://genome.sph.umich.edu/wiki/Vt)
+
+## Normalization : left alignment of polymorphisms
+vt normalize ${OUTPUT_BCFTOOLS}/${fname}_mapq_entropy_gvcf_alt5.vcf -n -r $GENOME -o ${OUTPUT_VT}/${fname}_mapq_entropy_gvcf_alt5_normalizeVT.vcf
+
+## decomposes biallelic block substitutions
+vt decompose -s ${OUTPUT_VT}/${fname}_mapq_entropy_gvcf_alt5_normalizeVT.vcf -o ${OUTPUT_VT}/${fname}_mapq_entropy_gvcf_alt5_normalizeVT_decompose.vcf
+
+## decomposes biallelic clumped variant
+vt decompose_blocksub -a ${OUTPUT_VT}/${fname}_mapq_entropy_gvcf_alt5_normalizeVT_decompose.vcf -o ${OUTPUT_VT}/${fname}_mapq_entropy_normalizeVT_decompose_decompose_blocksub.vcf
+
+## sort polymorphisms by positions
+vt sort ${OUTPUT_VT}/${fname}_mapq_entropy_normalizeVT_decompose_decompose_blocksub.vcf -o ${OUTPUT_VT}/${fname}_mapq_entropy_normalizeVT_decompose_decompose_blocksub_sort.vcf
+
+## suppress duplicate SNPs
+vt uniq ${OUTPUT_VT}/${fname}_mapq_entropy_normalizeVT_decompose_decompose_blocksub_sort.vcf -o ${OUTPUT_VT}/${fname}_mapq_entropy_gvcf_alt5_final.vcf
+
+
+done < "${LIST_BOWTIE}"
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 4 - merge vcf files using bcftools v1.16 (https://samtools.github.io/bcftools/bcftools.html) 
+
+cat ${OUTPUT_VT}/*_mapq_entropy_gvcf_alt5_final.vcf > vcf_list.txt
+bcftools merge -l vcf_list.txt -m all -o merge_vcf_files_evol_expe.vcf -O v
+grep -v "##" merge_vcf_files_evol_expe.vcf > merge_vcf_files_evol_expe_modif.vcf
