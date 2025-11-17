@@ -1,0 +1,8 @@
+molecule;name;start;end;length;region;strand;yposition
+OsHV genome;IRs;184522;194295;9774;RS;forward;0.5
+OsHV genome;TRs;197666;207439;9774;RS;reverse;0.5
+OsHV genome;X;183012;184521;1510;X;forward;0.5
+OsHV genome;Ul;7585;175427;167843;UL;forward;0.5
+OsHV genome;Us;194296;197665;3370;US;forward;0.5
+OsHV genome;TRl;1;7584;7584;RL;forward;0.5
+OsHV genome;IRl;175428;183011;7584;RL;reverse;0.5
