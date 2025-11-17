@@ -295,54 +295,54 @@ vecnames <- rownames(acp1$rotation)
 data_pca <- as.data.frame(pca.res$x)
 NbClust(data_pca[,1:2], method = 'kmeans', index = 'all')$Best.nc
 NbClust(data_pca[,1:2], method = 'complete', index = 'all')$Best.partition
-clust <- kmeans(data_pca[,1:2], 5)$cluster %>%
+clust <- kmeans(data_pca[,1:2], 3)$cluster %>%
   as.factor()
 data_pca <- data_pca %>%
   mutate(groups = clust)
 
-pca_res.tmp <- as.data.frame(pca.res$x)
+pca_res.tmp <- as.data.frame(data_pca)
 
 
-for (lines in 1:nrow(pca.res$x)){
+for (lines in 1:nrow(data_pca)){
   
-  rname <- row.names(as.data.frame(pca.res$x))[lines]
+  rname <- row.names(as.data.frame(data_pca))[lines]
   fam_name <- (str_split(rname,"_"))[[1]][1]
   Gen_name <- (str_split(rname,"_"))[[1]][2]
   rep_name <- (str_split(rname,"_"))[[1]][3]
   
   if (fam_name == "GT3"){
-    pca_res.tmp[lines, 97] <- "#000099"
+    pca_res.tmp[lines, 98] <- "#000099"
   } else if (fam_name == "GT5"){
-    pca_res.tmp[lines, 97] <- "#FF6600"
+    pca_res.tmp[lines, 98] <- "#FF6600"
   }else if (fam_name == "GT9"){
-    pca_res.tmp[lines, 97] <- "#009900"
+    pca_res.tmp[lines, 98] <- "#009900"
   }
   
   if (Gen_name == "G0"){
-    pca_res.tmp[lines, 98] <- 0.1
+    pca_res.tmp[lines, 99] <- 0.1
   } else if (Gen_name == "G5"){
-    pca_res.tmp[lines, 98] <- 0.3
+    pca_res.tmp[lines, 99] <- 0.3
   }else if (Gen_name == "G10"){
-    pca_res.tmp[lines, 98] <- 0.5
+    pca_res.tmp[lines, 99] <- 0.5
   }else if (Gen_name == "G13"){
-    pca_res.tmp[lines, 98] <- 0.6
+    pca_res.tmp[lines, 99] <- 0.6
   }else if (Gen_name == "G15"){
-    pca_res.tmp[lines, 98] <- 0.6
+    pca_res.tmp[lines, 99] <- 0.6
   }else if (Gen_name == "G18"){
-    pca_res.tmp[lines, 98] <- 0.7
+    pca_res.tmp[lines, 99] <- 0.7
   }else if (Gen_name == "G20"){
-    pca_res.tmp[lines, 98] <- 0.7
+    pca_res.tmp[lines, 99] <- 0.7
   }else if (Gen_name == "G24"){
-    pca_res.tmp[lines, 98] <- 0.8
+    pca_res.tmp[lines, 99] <- 0.8
   }else if (Gen_name == "G28"){
-    pca_res.tmp[lines, 98] <- 0.9
+    pca_res.tmp[lines, 99] <- 0.9
   }
   
   
    if (rep_name == "R1"){
-     pca_res.tmp[lines, 99] <- 15
+     pca_res.tmp[lines, 100] <- 15
    }else if (rep_name == "R2"){
-     pca_res.tmp[lines, 99] <- 17
+     pca_res.tmp[lines, 100] <- 17
    }
   
   }
@@ -354,8 +354,9 @@ for (lines in 1:nrow(pca.res$x)){
 
 p1_gen_fam<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=fam_oyster, shape=rep, alpha=generation))+
   geom_point(size=4)+ 
+  stat_ellipse(aes(x=PC1, y=PC2, group=groups, color=groups), type="norm", linetype=2, linewidth=1) +
   scale_shape_manual(values = c(15,17,18))+
-  scale_color_manual(values=c( "#000099", "#FF6600", "#009900"))+
+  scale_color_manual(values=c( "#000099", "#FF6600", "#009900", "grey", "grey", "grey"))+
   xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
   ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))+ theme_classic()
 
