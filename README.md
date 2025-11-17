@@ -1,6 +1,6 @@
 # Experimental_evolution
 ## Name
-Experimentally mimicking 30 years of Magallana gigas infections with the OsHV-1 virus reveals evolution through positive selection
+Experimentally mimicking long term infections of Magallana gigas with the OsHV-1 virus reveals evolution through positive selection
 
 ## Description
 This repository contains scripts that have been used to performed analysis of experimental evolution datas from Pelletier et al, 2025.
