@@ -12,6 +12,14 @@ To run the analyses and reproduce the results presented in this project, the fol
 
 **Software:**\
 R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), tidyr (v1.3.1), ggpubr (v0.6.1), tidyverse(v2.0.0), dplyr (v1.1.4), factoextra (v1.0.7), poolSeq (v0.3.5.90), NbClust (v3.0.1), knitr (v1.50), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).\
+```
+How to install GiHub packages?
+install.packages("remotes")
+# Installer PoolSeq depuis GitHub
+remotes::install_github("molpopgen/PoolSeq", ref = "v0.3.5.90")
+
+```
+
 Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
 Fastp v0.20.1 for read quality filtering and trimming.\
 Bowtie2 v2.4.1 for read mapping.\
