@@ -10,7 +10,7 @@ Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. 
 ## Prerequisites
 To run the analyses and reproduce the results presented in this project, the following prerequisites are required:
 
-**Software requirements :**\
+###**Software requirements :**\
 All analyses were performed in R version 4.2.2. The following R packages are needed to run the included scripts: 
 
 → Available on CRAN for current version of R 
