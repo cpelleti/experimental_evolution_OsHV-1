@@ -16,14 +16,34 @@ All analyses were performed in R version 4.2.2. The following R packages are nee
 ### Available on CRAN for current version of R 
 These packages can be installed by running the command `install.packages(package_name)` 
 
- ggplot2 (v3.5.2 or later), rstatix (v0.7.2), tidyr (v1.3.1), ggpubr (v0.6.1), tidyverse(v2.0.0), dplyr (v1.1.4), factoextra (v1.0.7), poolSeq (v0.3.5.90), NbClust (v3.0.1), knitr (v1.50), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).
+1. tidyverse (version 2.0.0): Load multiple tidyverse packages in a single step, including dplyr (version 1.1.4), ggplot2 (3.4.0), tibble (version 3.3.0), stringr (version 1.5.1), and tidyr (version 1.3.1)
+2. factoextra (version 1.0.7): Extract and visualize the output of multivariate data analyses 
+3. NbClust (version 3.0.1): Determine the best number of clusters 
+4. MullerPlot (version 0.13): Visualize emergence and loss of genotypes 
+5. ggpubr (version 0.6.1): Additional plotting functionality for ggplot2 
+6. gggenes (version 0.5.1): Drawing gene arrow maps in ggplot2 
+7. rstatix (version 0.7.2): Framework for performing common statistical tests, computing effect sizes
+8. dplyr (version 1.1.4): Data manipulation, providing tools to efficiently filter, transform, summarize, and organize data
+9. knitr (version 1.50): Enables dynamic report generation by integrating R code, results, and narrative text into documents
+10. stats (base R, version 4.5.1): Provides fundamental statistical functions, including probability distributions, hypothesis testing, linear and nonlinear modeling 
 
-`How to install GitHub packages?
+
+### Not available on CRAN for current version of R 
+
+1. poolSeq 
+```
 install.packages("remotes")
  # Install PoolSeq from GitHub
 remotes::install_github("ThomasTaus/poolSeq") 
+ ```
+ Or follow the installation instructions provided on the GitHub repository: https://github.com/ThomasTaus/poolSeq/. Ensure all dependencies are installed first: data.table (>= 1.9.4), foreach (>= 1.4.2), stringi (>= 0.4-1), matrixStats (>= 0.14.2), Rcpp (>= 1.0.3) 
+ 
+ 2. ACER v1.0 
+ ```
  # Install ACER from GitHub
-remotes::install_github("MartaPelizzola/ACER")`
+remotes::install_github("MartaPelizzola/ACER")
+```
+Or follow the installation instructions provided on the GitHub repository: https://github.com/MartaPelizzola/ACER
 
 Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
 Fastp v0.20.1 for read quality filtering and trimming.\
