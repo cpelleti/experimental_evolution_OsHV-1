@@ -28,7 +28,7 @@ These packages can be installed by running the command `install.packages(package
 10. stats (base R, version 4.5.1): Provides fundamental statistical functions, including probability distributions, hypothesis testing, linear and nonlinear modeling 
 
 
-→ Not available on CRAN for current version of R 
+→ <ins>Not available</ins> on CRAN for current version of R 
 
 1. poolSeq 
 ```
@@ -46,15 +46,17 @@ remotes::install_github("MartaPelizzola/ACER")
 Or follow the installation instructions provided on the GitHub repository: https://github.com/MartaPelizzola/ACER
 
 
-
-
-Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
+**Software requirements for bash environment:**\
 Fastp v0.20.1 for read quality filtering and trimming.\
 Bowtie2 v2.4.1 for read mapping.\
 metaSPAdes v3.15.4 for de novo genome assembly.\
 Freebayes v1.3.5 for variant calling.\
 MAFFT v1.4.0 for sequence alignment.\
 vt v2005.11.10 for variant normalization and deduplication.
+
+**Software requirements for analyses:**\
+Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
+
 
 **Datasets:**\
 Raw sequencing reads for 126 OsHV-1 µVar libraries, publicly available in NCBI SRA under Bioproject PRJNA1216400 (accession numbers SAMN46433918 to SAMN46434013).\
