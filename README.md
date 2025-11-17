@@ -11,7 +11,7 @@ Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. 
 To run the analyses and reproduce the results presented in this project, the following prerequisites are required:
 
 **Software:**\
-R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), factoextra (v1.0.7), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).\
+R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), tidyr (v1.3.1), ggpubr (v0.6.1), tidyverse(v2.0.0), dplyr (v1.1.4), factoextra (v1.0.7), poolSeq (v0.3.5.90), NbClust (v3.0.1), knitr (v1.50), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).\
 Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
 Fastp v0.20.1 for read quality filtering and trimming.\
 Bowtie2 v2.4.1 for read mapping.\
@@ -92,6 +92,8 @@ Execution: script 06_muller_plot_Fig10.R\
 Assign iSNVs to their origin based on G0 viral inoculum ; Group variants by geographic origin and visualize relative abundances using MullerPlot in R.\
 Output: Muller plots showing lineage emergence and dynamics throughout the experimental evolution.
 
+## License
+This work is licensed under the MIT License.
 
 ## Contact
 For help with this bioinformatics project, please reach out to Camille Pelletier (camille.pelletier@ifremer.fr), Maude Jacquot (maude.jacquot@ifremer.fr), Germain Chevignon (germain.chevignon@ifremer.fr), or Benjamin Morga (benjamin.morga@ifremer.fr). They can assist with any questions, troubleshooting, or clarifications. Feel free to contact them directly or through the appropriate communication channels.
