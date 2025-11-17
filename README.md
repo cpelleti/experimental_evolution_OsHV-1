@@ -4,13 +4,13 @@
 This project was developed to investigate the genomic evolution and selection dynamics of OsHV-1 µVar during experimental infections in oyster populations. The accompanying R scripts implement a complete workflow from statistical analysis of mortality and viral load across generations, to de novo genome assembly, variant calling, and detailed intra-individual Single Nucleotide Variant (iSNV) analyses. The code enables reproducible reconstruction of viral consensus genomes, identification of genomic variability, analysis of substitution patterns, principal component analyses for population structure, detection of selection signatures, and visualization of genotype frequencies using Muller plots. This workflow is designed for large-scale genomic datasets and allows researchers to track viral evolution across host populations and generations. All raw sequencing data are publicly available in NCBI SRA under Bioproject PRJNA1216400, This framework can be applied to study evolutionary dynamics, viral adaptation, and population genomics in other pathogen-host systems.
 
 ## Description
-This repository contains scripts that have been used to performed analysis of experimental evolution datas from Pelletier et al, 2025.
+This repository contains scripts that have been used to performed analysis of experimental evolution datas from Pelletier et al, 2025.\
 Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. NCBI:BioProject: PRJNA1216400.
 
 ## Prerequisites
 To run the analyses and reproduce the results presented in this project, the following prerequisites are required:
 
-<ins>Software:</ins>\
+**Software:**\
 R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), factoextra (v1.0.7), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).\
 Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
 Fastp v0.20.1 for read quality filtering and trimming.\
@@ -20,15 +20,15 @@ Freebayes v1.3.5 for variant calling.\
 MAFFT v1.4.0 for sequence alignment.\
 vt v2005.11.10 for variant normalization and deduplication.\
 
-<ins>Datasets:</ins>\
+**Datasets:**\
 Raw sequencing reads for 126 OsHV-1 µVar libraries, publicly available in NCBI SRA under Bioproject PRJNA1216400 (accession numbers SAMN46433918 to SAMN46434013).\
 Reference genome of Magallana gigas (GCF_902806645.1) for host read filtering.
 
-<ins>Hardware Requirements:</ins>\
+**Hardware Requirements:**\
 A standard desktop or laptop computer with at least 16 GB RAM for genome assembly and variant calling.\
 Multi-core CPU recommended for parallelized analyses in metaSPAdes, Bowtie2, and Freebayes.
 
-<ins>Usage Notes:</ins>\
+**Usage Notes:**\
 Scripts are designed to be run sequentially, starting from raw data preprocessing through to statistical analyses, variant calling, and visualization.
 
 ## Contents
@@ -42,50 +42,50 @@ Scripts are designed to be run sequentially, starting from raw data preprocessin
 | 05_allelic_trajectories_Fig9.R  | R script to compute allelic frequency trajectories and generate Figure 9. |
 | 06_muller_plot_Fig10.R  | R script to visualize genotype emergence and lineage dynamics using Muller plots (Figure 10). |
 
-File formats:\
+**File formats:**\
 .R – R scripts, editable in RStudio or any text editor.\
 .sh.txt – Shell script for Linux/macOS terminal execution.\
-.csv or .tsv (in test_datas/) – data tables for input/output, compatible with R, Excel, or any text editor.\
+.csv or .tsv (in test_datas/) – data tables for input/output, compatible with R, Excel, or any text editor.
 
 This structure allows sequential execution of the workflow from variant calling to statistical analyses and visualization of results.
 
 ## Usage
 This repository provides scripts and pipelines for the statistical and genomic analysis of OsHV-1 in oyster populations, including mortality, viral load, viral genome assembly, variant calling, selection detection, and lineage tracking. Below are step-by-step instructions for using the code.
 
-1. Statistical analysis of mortality and viral load
+**1. Statistical analysis of mortality and viral load**
 
 Input: Mortality and viral load data across oyster populations and generations.\
 Execution: script 02_stats_mortalities_viralLoad_Fig3.R\
 Output: Graphical representations of mortality and viral load; ANOVA tables showing differences among populations and generations.
 
-2. Assembly of viral NR-genomes
+**2. Assembly of viral NR-genomes**
 
 Input: Raw Illumina paired-end reads from OsHV-1 infected oyster tissues.\
 Execution: Quality filter and trim reads using Fastp ; Remove host sequences by mapping reads to the M. gigas reference genome using Bowtie2; Assemble OsHV-1 reads de novo with metaSPAdes ; Identify OsHV-1 contigs with BLASTn and reorder in Geneious to reconstruct NR-genomes.\
 Output: Non-redundant viral genomes (NR-genomes) for each viral suspension.
 
-3. Variant calling
+**3. Variant calling**
 
 Input: Filtered reads and the artificial OsHV-1 major NR-consensus._
 Execution: script 01_variant_calling.sh\
 Post-processing: Normalize, decompose, sort, and deduplicate variants using vt, then retain variants with ≥10% frequency.\
 Output: VCF files containing intra-individual Single Nucleotide Variants (iSNVs).
 
-4. Substitution analysis and clustering
+**4. Substitution analysis and clustering**
 
 Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
 Execution: script 03_stats_ts_tv_Fig5.R\
 Analyze transitions/transversions with BCFtools stats ; Average substitution counts per generation and population ; Visualize using ggplot2 ; Perform PCA on iSNV frequencies to explore sample clustering using factoextra in R.\
 Output: Plots showing substitution patterns, ts/tv ratios, and sample clustering across oyster populations.
 
-5. Selection detection
+**5. Selection detection**
 
 Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
 Execution: scripts 04_Genomic_selection_detection_Fig6-7-8.R and 05_allelic_trajectories_Fig9.R\
 Compare allele frequencies between initial and evolved generations ; Apply Cochran-Mantel-Haenszel (CMH) tests using ACER in R ; Adjust p-values using FDR and visualize significant iSNVs with Manhattan plots.\
 Output: iSNVs under selection and their allele frequency trajectories across generations.
 
-6. Genotype proportion visualization
+**6. Genotype proportion visualization**
 
 Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
 Execution: script 06_muller_plot_Fig10.R\
