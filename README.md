@@ -10,10 +10,10 @@ Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. 
 ## Prerequisites
 To run the analyses and reproduce the results presented in this project, the following prerequisites are required:
 
-**Software:**\
+**Software requirements :**\
 All analyses were performed in R version 4.2.2. The following R packages are needed to run the included scripts: 
 
-### Available on CRAN for current version of R 
+→ Available on CRAN for current version of R 
 These packages can be installed by running the command `install.packages(package_name)` 
 
 1. tidyverse (version 2.0.0): Load multiple tidyverse packages in a single step, including dplyr (version 1.1.4), ggplot2 (3.4.0), tibble (version 3.3.0), stringr (version 1.5.1), and tidyr (version 1.3.1)
@@ -28,7 +28,7 @@ These packages can be installed by running the command `install.packages(package
 10. stats (base R, version 4.5.1): Provides fundamental statistical functions, including probability distributions, hypothesis testing, linear and nonlinear modeling 
 
 
-### Not available on CRAN for current version of R 
+→ Not available on CRAN for current version of R 
 
 1. poolSeq 
 ```
@@ -44,6 +44,9 @@ remotes::install_github("ThomasTaus/poolSeq")
 remotes::install_github("MartaPelizzola/ACER")
 ```
 Or follow the installation instructions provided on the GitHub repository: https://github.com/MartaPelizzola/ACER
+
+
+
 
 Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
 Fastp v0.20.1 for read quality filtering and trimming.\
