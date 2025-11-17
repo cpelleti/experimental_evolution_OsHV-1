@@ -15,7 +15,7 @@ ipak <- function(pkg){
 }
 
 ipak(unique(
-  c( "tidyverse", "dplyr", "knitr", "VennDiagram") # plot
+  c( "tidyverse", "dplyr", "knitr") # plot
 ) )
 
 addline_format <- function(x,...){
