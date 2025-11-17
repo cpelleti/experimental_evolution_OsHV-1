@@ -34,8 +34,10 @@ Scripts are designed to be run sequentially, starting from raw data preprocessin
 ## Contents
 | Folder/File   | Description |
 | ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
+| test_datas/   | Content Cell  |
+| 01_variant_calling.sh  | Content Cell  |
+| 02_stats_mortalities_viralLoad_Fig3.R   | Content Cell  |
+| 01_variant_calling.sh  | Content Cell  |
 
 File formats:
 .R – R scripts, editable in RStudio or any text editor.
