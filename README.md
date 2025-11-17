@@ -10,10 +10,10 @@ Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. 
 ## Prerequisites
 To run the analyses and reproduce the results presented in this project, the following prerequisites are required:
 
-###**Software requirements :**\
+**Software requirements for R:**\
 All analyses were performed in R version 4.2.2. The following R packages are needed to run the included scripts: 
 
-→ Available on CRAN for current version of R 
+→ <ins>Available</ins> on CRAN for current version of R 
 These packages can be installed by running the command `install.packages(package_name)` 
 
 1. tidyverse (version 2.0.0): Load multiple tidyverse packages in a single step, including dplyr (version 1.1.4), ggplot2 (3.4.0), tibble (version 3.3.0), stringr (version 1.5.1), and tidyr (version 1.3.1)
