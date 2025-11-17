@@ -2,7 +2,7 @@
 ##title: "allelic trajectories"
 ##author: "Pelletier Camille"
 #date: 20/09/2022
-rm(list=ls())
+
 '%!in%' <- function(x,y)!('%in%'(x,y))
 options( "digits"=3)
 
