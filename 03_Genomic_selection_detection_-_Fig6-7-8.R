@@ -744,7 +744,7 @@ RS_color = "red3"
 
 
 # Genome drawing
-OsHV_uVarA_scheme <- data.table::fread(glue::glue("C:/Users/cpelleti/Documents/06_Articles/Publication_O.edulis-phylogeny_PELLETIER&al/OsHV1_annotations2.csv") ) %>%
+OsHV_uVarA_scheme <- data.table::fread(glue::glue("./OsHV1_annotations2.csv") ) %>%
   dplyr::mutate(direction = if_else(strand == "forward",1,-1 ))
 
 
