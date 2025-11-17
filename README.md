@@ -10,7 +10,7 @@ Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. 
 ## Prerequisites
 To run the analyses and reproduce the results presented in this project, the following prerequisites are required:
 
-Software:
+<ins>Software:</ins>
 R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), factoextra (v1.0.7), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).
 Geneious Prime v2022.2.2 for genome assembly and alignment visualization.
 Fastp v0.20.1 for read quality filtering and trimming.
@@ -20,15 +20,15 @@ Freebayes v1.3.5 for variant calling.
 MAFFT v1.4.0 for sequence alignment.
 vt v2005.11.10 for variant normalization and deduplication.
 
-Datasets:
+<ins>Datasets:</ins>
 Raw sequencing reads for 126 OsHV-1 µVar libraries, publicly available in NCBI SRA under Bioproject PRJNA1216400 (accession numbers SAMN46433918 to SAMN46434013).
 Reference genome of Magallana gigas (GCF_902806645.1) for host read filtering.
 
-Hardware Requirements:
+<ins>Hardware Requirements:</ins>
 A standard desktop or laptop computer with at least 16 GB RAM for genome assembly and variant calling.
 Multi-core CPU recommended for parallelized analyses in metaSPAdes, Bowtie2, and Freebayes.
 
-Usage Notes:
+<ins>Usage Notes:</ins>
 Scripts are designed to be run sequentially, starting from raw data preprocessing through to statistical analyses, variant calling, and visualization.
 
 ## Contents
