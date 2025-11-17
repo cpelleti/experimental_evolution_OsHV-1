@@ -49,6 +49,50 @@ File formats:
 
 This structure allows sequential execution of the workflow from variant calling to statistical analyses and visualization of results.
 
+## Usage
+This repository provides scripts and pipelines for the statistical and genomic analysis of OsHV-1 in oyster populations, including mortality, viral load, viral genome assembly, variant calling, selection detection, and lineage tracking. Below are step-by-step instructions for using the code.
+
+1. Statistical analysis of mortality and viral load
+
+Input: Mortality and viral load data across oyster populations and generations.
+Execution: script 02_stats_mortalities_viralLoad_Fig3.R
+Output: Graphical representations of mortality and viral load; ANOVA tables showing differences among populations and generations.
+
+2. Assembly of viral NR-genomes
+
+Input: Raw Illumina paired-end reads from OsHV-1 infected oyster tissues.
+Execution: Quality filter and trim reads using Fastp ; Remove host sequences by mapping reads to the M. gigas reference genome using Bowtie2; Assemble OsHV-1 reads de novo with metaSPAdes ; Identify OsHV-1 contigs with BLASTn and reorder in Geneious to reconstruct NR-genomes.
+Output: Non-redundant viral genomes (NR-genomes) for each viral suspension.
+
+3. Variant calling
+
+Input: Filtered reads and the artificial OsHV-1 major NR-consensus.
+Execution: script 01_variant_calling.sh
+Post-processing: Normalize, decompose, sort, and deduplicate variants using vt, then retain variants with ≥10% frequency.
+Output: VCF files containing intra-individual Single Nucleotide Variants (iSNVs).
+
+4. Substitution analysis and clustering
+
+Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).
+Execution: script 03_stats_ts_tv_Fig5.R
+Analyze transitions/transversions with BCFtools stats ; Average substitution counts per generation and population ; Visualize using ggplot2 ; Perform PCA on iSNV frequencies to explore sample clustering using factoextra in R.
+Output: Plots showing substitution patterns, ts/tv ratios, and sample clustering across oyster populations.
+
+5. Selection detection
+
+Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).
+Execution: scripts 04_Genomic_selection_detection_Fig6-7-8.R and 05_allelic_trajectories_Fig9.R
+Compare allele frequencies between initial and evolved generations ; Apply Cochran-Mantel-Haenszel (CMH) tests using ACER in R ; Adjust p-values using FDR and visualize significant iSNVs with Manhattan plots.
+Output: iSNVs under selection and their allele frequency trajectories across generations.
+
+6. Genotype proportion visualization
+
+Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).
+Execution: script 06_muller_plot_Fig10.R
+Assign iSNVs to their origin based on G0 viral inoculum ; Group variants by geographic origin and visualize relative abundances using MullerPlot in R.
+Output: Muller plots showing lineage emergence and dynamics throughout the experimental evolution.
+
+
 ## Contact
 For help with this bioinformatics project, please reach out to Camille Pelletier (camille.pelletier@ifremer.fr), Maude Jacquot (maude.jacquot@ifremer.fr), Germain Chevignon (germain.chevignon@ifremer.fr), or Benjamin Morga (benjamin.morga@ifremer.fr). They can assist with any questions, troubleshooting, or clarifications. Feel free to contact them directly or through the appropriate communication channels.
 
