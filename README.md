@@ -18,7 +18,7 @@ Bowtie2 v2.4.1 for read mapping.\
 metaSPAdes v3.15.4 for de novo genome assembly.\
 Freebayes v1.3.5 for variant calling.\
 MAFFT v1.4.0 for sequence alignment.\
-vt v2005.11.10 for variant normalization and deduplication.\
+vt v2005.11.10 for variant normalization and deduplication.
 
 **Datasets:**\
 Raw sequencing reads for 126 OsHV-1 µVar libraries, publicly available in NCBI SRA under Bioproject PRJNA1216400 (accession numbers SAMN46433918 to SAMN46434013).\
