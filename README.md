@@ -18,15 +18,12 @@ These packages can be installed by running the command `install.packages(package
 
  ggplot2 (v3.5.2 or later), rstatix (v0.7.2), tidyr (v1.3.1), ggpubr (v0.6.1), tidyverse(v2.0.0), dplyr (v1.1.4), factoextra (v1.0.7), poolSeq (v0.3.5.90), NbClust (v3.0.1), knitr (v1.50), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).
 
-```
-How to install GitHub packages?
+`How to install GitHub packages?
 install.packages("remotes")
  # Install PoolSeq from GitHub
 remotes::install_github("ThomasTaus/poolSeq") 
  # Install ACER from GitHub
-remotes::install_github("MartaPelizzola/ACER")` 
-
-```
+remotes::install_github("MartaPelizzola/ACER")`
 
 Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
 Fastp v0.20.1 for read quality filtering and trimming.\
