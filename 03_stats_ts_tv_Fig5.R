@@ -1,0 +1,544 @@
+#!/usr/bin/Rscript
+##title: "Plot transition and transversions experimental evolution"
+##author: "Pelletier Camille"
+#date: 20/09/2022
+rm(list=ls())
+'%!in%' <- function(x,y)!('%in%'(x,y))
+options( "digits"=3)
+
+###################################### Function to install / load package if it's not here ###############################################
+ipak <- function(pkg){
+  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+  if (length(new.pkg)) 
+    install.packages(new.pkg, dependencies = TRUE)
+  sapply(pkg, require, character.only = TRUE)
+}
+
+ipak(unique(
+  c( "tidyverse", "dplyr") # plot
+) )
+
+addline_format <- function(x,...){
+  gsub('//s','/n',x)
+}
+
+#------------------------------------------------------------------import datas-------------------------------------------------------------------------------
+subst_table<- read.csv2("./data_frame_allelic_frequencies_indiduals.csv")
+
+#------------------------------------------------------------------prepare datas------------------------------------------------------------------------------
+
+subst_table<- subst_table[subst_table$TYPE == "snp",]
+
+#determine if snps are ancestral or de novo
+# considered as ancestral if more than one individual carry the snp at G0 and considered as de novo mutations if less than one individual carry the snp at G0 
+for (i in 1:nrow(subst_table)){
+  
+  line_i <- subst_table[i,]
+  
+  ref_all <- line_i$REF
+  alt_all <- line_i$ALT
+  
+  subst_table$GT3_G0[i] <- sum(line_i[c("GT3_G0_R1_1", "GT3_G0_R1_4", "GT3_G0_R1_6","GT3_G0_R2_1", "GT3_G0_R2_3", "GT3_G0_R2_6")] > 0)
+  subst_table$GT5_G0[i] <- sum(line_i[c("GT5_G0_R1_3", "GT5_G0_R1_4", "GT5_G0_R1_6", "GT5_G0_R2_2", "GT5_G0_R2_3", "GT5_G0_R2_4")] > 0)
+  subst_table$GT9_G0[i] <- sum(line_i[c("GT9_G0_R1_1", "GT9_G0_R1_3", "GT9_G0_R1_6", "GT9_G0_R2_2", "GT9_G0_R2_3", "GT9_G0_R2_6")] > 0)
+  
+  if (subst_table$GT3_G0[i] == 0 | subst_table$GT3_G0[i] == 1 ){
+    subst_table$GT3_G0_ancestral[i] <- "denovo"
+  } else if (subst_table$GT3_G0[i] >1 ){
+    subst_table$GT3_G0_ancestral[i] <- "ancestral"
+  } 
+  
+  if (subst_table$GT5_G0[i] == 0 | subst_table$GT5_G0[i] == 1 ){
+    subst_table$GT5_G0_ancestral[i] <- "denovo"
+  } else if (subst_table$GT5_G0[i] >1 ){
+    subst_table$GT5_G0_ancestral[i] <- "ancestral"
+  } 
+  
+  if (subst_table$GT9_G0[i] == 0 | subst_table$GT9_G0[i] == 1 ){
+    subst_table$GT9_G0_ancestral[i] <- "denovo"
+  } else if (subst_table$GT9_G0[i] >1 ){
+    subst_table$GT9_G0_ancestral[i] <- "ancestral"
+  } 
+  
+  
+  if ((ref_all == "A" && alt_all == "G") || (ref_all == "G" && alt_all == "A") || (ref_all == "C" && alt_all == "T") || (ref_all == "T" && alt_all == "C")){
+    subst_table$tstv[i] <- "transition"
+  } else {
+    subst_table$tstv[i] <- "transversion"
+  }
+  
+  }
+
+write.csv(subst_table,)
+# create a subtable for ancestral/de novo snps 
+ancestral_GT3_snps <- subst_table[subst_table$GT3_G0_ancestral == "ancestral", ] %>% select(UniqueID:GT3_G5_R2_7,GT3_G0,GT3_G0_ancestral,tstv)
+denovo_GT3_snps <- subst_table[subst_table$GT3_G0_ancestral == "denovo", ]%>% select(UniqueID:GT3_G5_R2_7,GT3_G0,GT3_G0_ancestral,tstv)
+ancestral_GT5_snps <- subst_table[subst_table$GT5_G0_ancestral == "ancestral", ]%>% select(UniqueID:TYPE,GT5_G0_R1_3:GT5_G5_R2_7,GT5_G0, GT5_G0_ancestral,tstv)
+denovo_GT5_snps <- subst_table[subst_table$GT5_G0_ancestral == "denovo", ]%>% select(UniqueID:TYPE,GT5_G0_R1_3:GT5_G5_R2_7,GT5_G0, GT5_G0_ancestral,tstv)
+ancestral_GT9_snps <- subst_table[subst_table$GT9_G0_ancestral == "ancestral", ]%>% select(UniqueID:TYPE,GT9_G0_R1_1:GT9_G5_R2_7,GT9_G0, GT9_G0_ancestral,tstv)
+denovo_GT9_snps <- subst_table[subst_table$GT9_G0_ancestral == "denovo", ]%>% select(UniqueID:TYPE,GT9_G0_R1_1:GT9_G5_R2_7,GT9_G0, GT9_G0_ancestral,tstv)
+
+
+##create a dataframe of substitution number per library
+mat_tstv_ancestral_GT3 <- matrix(data=NA,nrow=144,ncol=5)
+mat_tstv_ancestral_GT5 <- matrix(data=NA,nrow=180,ncol=5)
+mat_tstv_ancestral_GT9 <- matrix(data=NA,nrow=252,ncol=5)
+mat_tstv_denovo_GT3 <- matrix(data=NA,nrow=144,ncol=5)
+mat_tstv_denovo_GT5 <- matrix(data=NA,nrow=180,ncol=5)
+mat_tstv_denovo_GT9 <- matrix(data=NA,nrow=252,ncol=5)
+
+counter <- 0
+cp_names<- 0
+for (j in 6:(ncol(ancestral_GT3_snps)-3)){
+  
+  ##colnames 
+  mat_names <- colnames(ancestral_GT3_snps)[6:29]
+  cp_names <- cp_names+1
+  #initializing substitution type
+
+  subst_df_j <- cbind(ancestral_GT3_snps[,1:5],as.numeric(ancestral_GT3_snps[,j]))
+  
+  AT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "A" ),6] >0))
+  AG_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "G" ) | (subst_df_j$REF == "G" & subst_df_j$ALT == "A" ),6] >0))  
+  AC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "A" ),6] >0))   
+  GT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "G" ),6] >0)) 
+  GC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "G" ),6] >0))
+  TC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "T" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "T" ),6] >0))   
+  
+  
+  mat_tstv_ancestral_GT3[(counter+1):(counter+6),1] <- mat_names[cp_names]
+  mat_tstv_ancestral_GT3[counter+1,2] <- "A|C"
+  mat_tstv_ancestral_GT3[counter+1,3] <- AC_snps
+  mat_tstv_ancestral_GT3[counter+1,4] <- "#273572"
+  mat_tstv_ancestral_GT3[counter+1,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT3[counter+2,2] <- "A|T"
+  mat_tstv_ancestral_GT3[counter+2,3] <- AT_snps
+  mat_tstv_ancestral_GT3[counter+2,4] <- "#6f91cb"
+  mat_tstv_ancestral_GT3[counter+2,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT3[counter+3,2] <- "C|G"
+  mat_tstv_ancestral_GT3[counter+3,3] <- GC_snps
+  mat_tstv_ancestral_GT3[counter+3,4] <- "#8bd0df"
+  mat_tstv_ancestral_GT3[counter+3,5] <-"Transversion"
+ 
+  
+  mat_tstv_ancestral_GT3[counter+4,2] <- "G|T"
+  mat_tstv_ancestral_GT3[counter+4,3] <- GT_snps
+  mat_tstv_ancestral_GT3[counter+4,4] <- "#a6d4ba"
+  mat_tstv_ancestral_GT3[counter+4,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT3[counter+5,2] <- "A|G"
+  mat_tstv_ancestral_GT3[counter+5,3] <- AG_snps
+  mat_tstv_ancestral_GT3[counter+5,4] <- "#cc1236"
+  mat_tstv_ancestral_GT3[counter+5,5] <-"Transition"
+  
+  mat_tstv_ancestral_GT3[counter+6,2] <- "C|T"
+  mat_tstv_ancestral_GT3[counter+6,3] <- TC_snps
+  mat_tstv_ancestral_GT3[counter+6,4] <- "#f39669"
+  mat_tstv_ancestral_GT3[counter+6,5] <-"Transition"
+  
+  counter <- counter+6
+  
+}
+
+counter <- 0
+cp_names<- 0
+for (j in 6:(ncol(denovo_GT3_snps)-3)){
+  
+  ##colnames 
+  mat_names <- colnames(denovo_GT3_snps)[6:29]
+  cp_names <- cp_names+1
+  #initializing substitution type
+ 
+  subst_df_j <- cbind(denovo_GT3_snps[,1:5],as.numeric(denovo_GT3_snps[,j]))
+  
+  AT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "A" ),6] >0))
+  AG_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "G" ) | (subst_df_j$REF == "G" & subst_df_j$ALT == "A" ),6] >0))  
+  AC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "A" ),6] >0))   
+  GT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "G" ),6] >0)) 
+  GC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "G" ),6] >0))
+  TC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "T" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "T" ),6] >0))   
+  
+  
+  mat_tstv_denovo_GT3[(counter+1):(counter+6),1] <- mat_names[cp_names]
+  mat_tstv_denovo_GT3[counter+1,2] <- "A|C"
+  mat_tstv_denovo_GT3[counter+1,3] <- AC_snps
+  mat_tstv_denovo_GT3[counter+1,4] <- "#273572"
+  mat_tstv_denovo_GT3[counter+1,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT3[counter+2,2] <- "A|T"
+  mat_tstv_denovo_GT3[counter+2,3] <- AT_snps
+  mat_tstv_denovo_GT3[counter+2,4] <- "#6f91cb"
+  mat_tstv_denovo_GT3[counter+2,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT3[counter+3,2] <- "C|G"
+  mat_tstv_denovo_GT3[counter+3,3] <- GC_snps
+  mat_tstv_denovo_GT3[counter+3,4] <- "#8bd0df"
+  mat_tstv_denovo_GT3[counter+3,5] <-"Transversion"
+  
+  
+  mat_tstv_denovo_GT3[counter+4,2] <- "G|T"
+  mat_tstv_denovo_GT3[counter+4,3] <- GT_snps
+  mat_tstv_denovo_GT3[counter+4,4] <- "#a6d4ba"
+  mat_tstv_denovo_GT3[counter+4,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT3[counter+5,2] <- "A|G"
+  mat_tstv_denovo_GT3[counter+5,3] <- AG_snps
+  mat_tstv_denovo_GT3[counter+5,4] <- "#cc1236"
+  mat_tstv_denovo_GT3[counter+5,5] <-"Transition"
+  
+  mat_tstv_denovo_GT3[counter+6,2] <- "C|T"
+  mat_tstv_denovo_GT3[counter+6,3] <- TC_snps
+  mat_tstv_denovo_GT3[counter+6,4] <- "#f39669"
+  mat_tstv_denovo_GT3[counter+6,5] <-"Transition"
+  
+  counter <- counter+6
+  
+}
+
+counter <- 0
+cp_names<- 0
+for (j in 6:(ncol(ancestral_GT5_snps)-3)){
+  
+  ##colnames 
+  mat_names <- colnames(ancestral_GT5_snps)[6:35]
+  cp_names <- cp_names+1
+  #initializing substitution type
+  
+  subst_df_j <- cbind(ancestral_GT5_snps[,1:5],as.numeric(ancestral_GT5_snps[,j]))
+  
+  AT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "A" ),6] >0))
+  AG_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "G" ) | (subst_df_j$REF == "G" & subst_df_j$ALT == "A" ),6] >0))  
+  AC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "A" ),6] >0))   
+  GT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "G" ),6] >0)) 
+  GC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "G" ),6] >0))
+  TC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "T" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "T" ),6] >0))   
+  
+  
+  mat_tstv_ancestral_GT5[(counter+1):(counter+6),1] <- mat_names[cp_names]
+  mat_tstv_ancestral_GT5[counter+1,2] <- "A|C"
+  mat_tstv_ancestral_GT5[counter+1,3] <- AC_snps
+  mat_tstv_ancestral_GT5[counter+1,4] <- "#273572"
+  mat_tstv_ancestral_GT5[counter+1,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT5[counter+2,2] <- "A|T"
+  mat_tstv_ancestral_GT5[counter+2,3] <- AT_snps
+  mat_tstv_ancestral_GT5[counter+2,4] <- "#6f91cb"
+  mat_tstv_ancestral_GT5[counter+2,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT5[counter+3,2] <- "C|G"
+  mat_tstv_ancestral_GT5[counter+3,3] <- GC_snps
+  mat_tstv_ancestral_GT5[counter+3,4] <- "#8bd0df"
+  mat_tstv_ancestral_GT5[counter+3,5] <-"Transversion"
+  
+  
+  mat_tstv_ancestral_GT5[counter+4,2] <- "G|T"
+  mat_tstv_ancestral_GT5[counter+4,3] <- GT_snps
+  mat_tstv_ancestral_GT5[counter+4,4] <- "#a6d4ba"
+  mat_tstv_ancestral_GT5[counter+4,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT5[counter+5,2] <- "A|G"
+  mat_tstv_ancestral_GT5[counter+5,3] <- AG_snps
+  mat_tstv_ancestral_GT5[counter+5,4] <- "#cc1236"
+  mat_tstv_ancestral_GT5[counter+5,5] <-"Transition"
+  
+  mat_tstv_ancestral_GT5[counter+6,2] <- "C|T"
+  mat_tstv_ancestral_GT5[counter+6,3] <- TC_snps
+  mat_tstv_ancestral_GT5[counter+6,4] <- "#f39669"
+  mat_tstv_ancestral_GT5[counter+6,5] <-"Transition"
+  
+  counter <- counter+6
+  
+}
+
+
+counter <- 0
+cp_names<- 0
+for (j in 6:(ncol(denovo_GT5_snps)-3)){
+  
+  ##colnames 
+  mat_names <- colnames(denovo_GT5_snps)[6:35]
+  cp_names <- cp_names+1
+  #initializing substitution type
+  
+  subst_df_j <- cbind(denovo_GT5_snps[,1:5],as.numeric(denovo_GT5_snps[,j]))
+  
+  AT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "A" ),6] >0))
+  AG_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "G" ) | (subst_df_j$REF == "G" & subst_df_j$ALT == "A" ),6] >0))  
+  AC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "A" ),6] >0))   
+  GT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "G" ),6] >0)) 
+  GC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "G" ),6] >0))
+  TC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "T" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "T" ),6] >0))   
+  
+  
+  mat_tstv_denovo_GT5[(counter+1):(counter+6),1] <- mat_names[cp_names]
+  mat_tstv_denovo_GT5[counter+1,2] <- "A|C"
+  mat_tstv_denovo_GT5[counter+1,3] <- AC_snps
+  mat_tstv_denovo_GT5[counter+1,4] <- "#273572"
+  mat_tstv_denovo_GT5[counter+1,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT5[counter+2,2] <- "A|T"
+  mat_tstv_denovo_GT5[counter+2,3] <- AT_snps
+  mat_tstv_denovo_GT5[counter+2,4] <- "#6f91cb"
+  mat_tstv_denovo_GT5[counter+2,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT5[counter+3,2] <- "C|G"
+  mat_tstv_denovo_GT5[counter+3,3] <- GC_snps
+  mat_tstv_denovo_GT5[counter+3,4] <- "#8bd0df"
+  mat_tstv_denovo_GT5[counter+3,5] <-"Transversion"
+  
+  
+  mat_tstv_denovo_GT5[counter+4,2] <- "G|T"
+  mat_tstv_denovo_GT5[counter+4,3] <- GT_snps
+  mat_tstv_denovo_GT5[counter+4,4] <- "#a6d4ba"
+  mat_tstv_denovo_GT5[counter+4,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT5[counter+5,2] <- "A|G"
+  mat_tstv_denovo_GT5[counter+5,3] <- AG_snps
+  mat_tstv_denovo_GT5[counter+5,4] <- "#cc1236"
+  mat_tstv_denovo_GT5[counter+5,5] <-"Transition"
+  
+  mat_tstv_denovo_GT5[counter+6,2] <- "C|T"
+  mat_tstv_denovo_GT5[counter+6,3] <- TC_snps
+  mat_tstv_denovo_GT5[counter+6,4] <- "#f39669"
+  mat_tstv_denovo_GT5[counter+6,5] <-"Transition"
+  
+  counter <- counter+6
+  
+}
+
+counter <- 0
+cp_names<- 0
+for (j in 6:(ncol(ancestral_GT9_snps)-3)){
+  
+  ##colnames 
+  mat_names <- colnames(ancestral_GT9_snps)[6:47]
+  cp_names <- cp_names+1
+  #initializing substitution type
+  
+  subst_df_j <- cbind(ancestral_GT9_snps[,1:5],as.numeric(ancestral_GT9_snps[,j]))
+  
+  AT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "A" ),6] >0))
+  AG_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "G" ) | (subst_df_j$REF == "G" & subst_df_j$ALT == "A" ),6] >0))  
+  AC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "A" ),6] >0))   
+  GT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "G" ),6] >0)) 
+  GC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "G" ),6] >0))
+  TC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "T" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "T" ),6] >0))   
+  
+  
+  mat_tstv_ancestral_GT9[(counter+1):(counter+6),1] <- mat_names[cp_names]
+  mat_tstv_ancestral_GT9[counter+1,2] <- "A|C"
+  mat_tstv_ancestral_GT9[counter+1,3] <- AC_snps
+  mat_tstv_ancestral_GT9[counter+1,4] <- "#273572"
+  mat_tstv_ancestral_GT9[counter+1,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT9[counter+2,2] <- "A|T"
+  mat_tstv_ancestral_GT9[counter+2,3] <- AT_snps
+  mat_tstv_ancestral_GT9[counter+2,4] <- "#6f91cb"
+  mat_tstv_ancestral_GT9[counter+2,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT9[counter+3,2] <- "C|G"
+  mat_tstv_ancestral_GT9[counter+3,3] <- GC_snps
+  mat_tstv_ancestral_GT9[counter+3,4] <- "#8bd0df"
+  mat_tstv_ancestral_GT9[counter+3,5] <-"Transversion"
+  
+  
+  mat_tstv_ancestral_GT9[counter+4,2] <- "G|T"
+  mat_tstv_ancestral_GT9[counter+4,3] <- GT_snps
+  mat_tstv_ancestral_GT9[counter+4,4] <- "#a6d4ba"
+  mat_tstv_ancestral_GT9[counter+4,5] <-"Transversion"
+  
+  mat_tstv_ancestral_GT9[counter+5,2] <- "A|G"
+  mat_tstv_ancestral_GT9[counter+5,3] <- AG_snps
+  mat_tstv_ancestral_GT9[counter+5,4] <- "#cc1236"
+  mat_tstv_ancestral_GT9[counter+5,5] <-"Transition"
+  
+  mat_tstv_ancestral_GT9[counter+6,2] <- "C|T"
+  mat_tstv_ancestral_GT9[counter+6,3] <- TC_snps
+  mat_tstv_ancestral_GT9[counter+6,4] <- "#f39669"
+  mat_tstv_ancestral_GT9[counter+6,5] <-"Transition"
+  
+  counter <- counter+6
+  
+}
+
+counter <- 0
+cp_names<- 0
+for (j in 6:(ncol(denovo_GT9_snps)-3)){
+  
+  ##colnames 
+  mat_names <- colnames(denovo_GT9_snps)[6:47]
+  cp_names <- cp_names+1
+  #initializing substitution type
+  
+  subst_df_j <- cbind(denovo_GT9_snps[,1:5],as.numeric(denovo_GT9_snps[,j]))
+  
+  AT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "A" ),6] >0))
+  AG_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "G" ) | (subst_df_j$REF == "G" & subst_df_j$ALT == "A" ),6] >0))  
+  AC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "A" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "A" ),6] >0))   
+  GT_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "T" ) | (subst_df_j$REF == "T" & subst_df_j$ALT == "G" ),6] >0)) 
+  GC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "G" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "G" ),6] >0))
+  TC_snps <- length(which(subst_df_j[ (subst_df_j$REF == "T" & subst_df_j$ALT == "C" ) | (subst_df_j$REF == "C" & subst_df_j$ALT == "T" ),6] >0))   
+  
+  
+  mat_tstv_denovo_GT9[(counter+1):(counter+6),1] <- mat_names[cp_names]
+  mat_tstv_denovo_GT9[counter+1,2] <- "A|C"
+  mat_tstv_denovo_GT9[counter+1,3] <- AC_snps
+  mat_tstv_denovo_GT9[counter+1,4] <- "#273572"
+  mat_tstv_denovo_GT9[counter+1,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT9[counter+2,2] <- "A|T"
+  mat_tstv_denovo_GT9[counter+2,3] <- AT_snps
+  mat_tstv_denovo_GT9[counter+2,4] <- "#6f91cb"
+  mat_tstv_denovo_GT9[counter+2,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT9[counter+3,2] <- "C|G"
+  mat_tstv_denovo_GT9[counter+3,3] <- GC_snps
+  mat_tstv_denovo_GT9[counter+3,4] <- "#8bd0df"
+  mat_tstv_denovo_GT9[counter+3,5] <-"Transversion"
+  
+  
+  mat_tstv_denovo_GT9[counter+4,2] <- "G|T"
+  mat_tstv_denovo_GT9[counter+4,3] <- GT_snps
+  mat_tstv_denovo_GT9[counter+4,4] <- "#a6d4ba"
+  mat_tstv_denovo_GT9[counter+4,5] <-"Transversion"
+  
+  mat_tstv_denovo_GT9[counter+5,2] <- "A|G"
+  mat_tstv_denovo_GT9[counter+5,3] <- AG_snps
+  mat_tstv_denovo_GT9[counter+5,4] <- "#cc1236"
+  mat_tstv_denovo_GT9[counter+5,5] <-"Transition"
+  
+  mat_tstv_denovo_GT9[counter+6,2] <- "C|T"
+  mat_tstv_denovo_GT9[counter+6,3] <- TC_snps
+  mat_tstv_denovo_GT9[counter+6,4] <- "#f39669"
+  mat_tstv_denovo_GT9[counter+6,5] <-"Transition"
+  
+  counter <- counter+6
+  
+}
+
+mat_tstv_ancestral <- as.data.frame(rbind(mat_tstv_ancestral_GT3, mat_tstv_ancestral_GT5, mat_tstv_ancestral_GT9))  
+mat_tstv_denovo <- as.data.frame(rbind(mat_tstv_denovo_GT3,mat_tstv_denovo_GT5,mat_tstv_denovo_GT9))
+
+colnames(mat_tstv_ancestral) <- c("Individual",	"Substitution",	"Number",	"Color",	"TSTV")
+colnames(mat_tstv_denovo) <- c("Individual",	"Substitution",	"Number",	"Color",	"TSTV")
+
+write.csv2(mat_tstv_ancestral, "./mat_subst_type_ancestral.csv")
+write.csv2(mat_tstv_denovo, "./mat_subst_type_denovo.csv")
+
+
+
+subst_type_denovo <- mat_tstv_denovo %>% tidyr::separate(Individual, c("Family","Generation","Replicate","Ind"), sep =c("_") ,remove = FALSE) %>%
+  dplyr::mutate(Family_generation= glue::glue("{Family}_{Generation}"))  %>%
+  dplyr::mutate(Family_generation_subs= glue::glue("{Family}_{Generation}_{Substitution}")) %>%  select(-Replicate, -Ind, -Family, -Generation)
+
+subst_type_ancestral <- mat_tstv_ancestral %>% tidyr::separate(Individual, c("Family","Generation","Replicate","Ind"), sep =c("_") ,remove = FALSE) %>%
+  dplyr::mutate(Family_generation= glue::glue("{Family}_{Generation}"))  %>%
+  dplyr::mutate(Family_generation_subs= glue::glue("{Family}_{Generation}_{Substitution}")) %>%  select(-Replicate, -Ind, -Family, -Generation)
+
+list_FGS <- c(subst_type_ancestral$Family_generation_subs, subst_type_denovo$Family_generation_subs) %>% sort() %>% unique()
+
+#create a matrix of mean number for each generations and family 
+mat_moy_tstv_ancestral <- matrix(data=NA,nrow=length(list_FGS),ncol=5)
+mat_moy_tstv_denovo <- matrix(data=NA,nrow=length(list_FGS),ncol=5)
+colnames(mat_moy_tstv_ancestral) <- c("Family_generation","Substitution", "Number","Color","TSTV")
+colnames(mat_moy_tstv_denovo) <- c("Family_generation","Substitution", "Number","Color","TSTV")
+
+i=0
+for (i in 1:length(list_FGS)){
+  FGS <- list_FGS[i]
+   subsi<- subst_type_ancestral[subst_type_ancestral$Family_generation_subs == FGS, ]
+  
+   mat_moy_tstv_ancestral[i,1] <- subsi$Family_generation[1]
+   mat_moy_tstv_ancestral[i,2] <- subsi$Substitution[1]
+   mat_moy_tstv_ancestral[i,4] <- subsi$Color[1]
+   mat_moy_tstv_ancestral[i,5] <- subsi$TSTV[1]
+   
+   mean_tstv <- as.numeric(mean(as.numeric(subsi$Number)))
+   mat_moy_tstv_ancestral[i,3] <- as.numeric(mean_tstv)
+   
+}
+
+i=0
+for (i in 1:length(list_FGS)){
+  FGS <- list_FGS[i]
+  subsi<- subst_type_denovo[subst_type_denovo$Family_generation_subs == FGS, ]
+  
+  mat_moy_tstv_denovo[i,1] <- subsi$Family_generation[1]
+  mat_moy_tstv_denovo[i,2] <- subsi$Substitution[1]
+  mat_moy_tstv_denovo[i,4] <- subsi$Color[1]
+  mat_moy_tstv_denovo[i,5] <- subsi$TSTV[1]
+  
+  mean_tstv <- as.numeric(mean(as.numeric(subsi$Number)))
+  mat_moy_tstv_denovo[i,3] <- as.numeric(mean_tstv)
+  
+}
+
+df_moy_tstv_denovo <- as.data.frame(mat_moy_tstv_denovo)
+df_moy_tstv_denovo$Number <- as.numeric(df_moy_tstv_denovo$Number)
+write.csv2(df_moy_tstv_denovo, "./mean_subst_type_denovo.csv")
+df_moy_tstv_ancestral <- as.data.frame(mat_moy_tstv_ancestral)
+df_moy_tstv_ancestral$Number <- as.numeric(df_moy_tstv_ancestral$Number)
+write.csv2(df_moy_tstv_ancestral, "./mean_subst_type_ancestral.csv")
+
+x11()
+ggplot(data = df_moy_tstv_ancestral, aes(x = Family_generation, y = Number)) +
+  geom_col(aes(fill = Substitution, group=TSTV), width = 0.7)+
+  scale_fill_manual(values=df_moy_tstv_ancestral$Color) + theme_classic()
+
+x11()
+ggplot(data = df_moy_tstv_denovo, aes(x = Family_generation, y = Number)) +
+  geom_col(aes(fill = Substitution, group=TSTV), width = 0.7)+
+  scale_fill_manual(values=df_moy_tstv_denovo$Color) + theme_classic()
+
+
+
+i=0
+list_FGS <- df_moy_tstv_denovo$Family_generation %>% sort() %>% unique()
+agg_df_final <- tibble()
+for (i in 1:length(list_FGS)){
+   list_FGS_i <- list_FGS[i]
+  subsi<- df_moy_tstv_denovo[df_moy_tstv_denovo$Family_generation ==  list_FGS_i,]
+  split_subsi <-subsi%>% tidyr::separate(Substitution, c("REF","ALT"), sep =c(">") ,remove = FALSE) 
+  
+  split_subsi$Pair <- apply(split_subsi[, c("REF", "ALT")], 1, function(x) paste(sort(x), collapse = "|"))
+  agg_df <- aggregate(Number ~ Pair, data = split_subsi, sum)
+  agg_df$Family_generation <- list_FGS_i
+  
+  
+  agg_df <- split_subsi %>%
+    group_by(Family_generation, Pair) %>%
+    summarise(
+      Total_Number = sum(Number),
+      TSTV = names(sort(table(TSTV), decreasing = TRUE))[1], # major type
+      .groups = "drop"
+    )
+  
+  unique_pairs <- sort(unique(agg_df$Pair))
+  palette <- c("#082684","#CC0033", "#6699FF", "#66FFFF","#FF9966","#99FFCC")
+  
+  # assign a unique color to each pair
+  pair_colors <- setNames(palette, unique_pairs)
+  agg_df$Color <- pair_colors[agg_df$Pair]
+  agg_df_final <- rbind(agg_df_final, agg_df)
+  
+  
+  
+  
+}
+
+agg_df_final <- as.data.frame(agg_df_final)
+agg_df_final$Total_Number <- as.numeric(agg_df_final$Total_Number)
+
+#------------------------------------------------------------------plot datas------------------------------------------------------------------------------
+
+
+x11()
+ggplot(data = agg_df_final, aes(x = Family_generation, y = Total_Number)) +
+  geom_col(aes(fill = Pair, group=TSTV), width = 0.7)+
+  scale_fill_manual(values=agg_df_final$Color) + theme_classic()
+
+
+
+
