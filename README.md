@@ -32,7 +32,10 @@ Usage Notes:
 Scripts are designed to be run sequentially, starting from raw data preprocessing through to statistical analyses, variant calling, and visualization.
 
 ## Contents
-
+| Folder/File   | Description |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
 
 File formats:
 .R – R scripts, editable in RStudio or any text editor.
