@@ -354,7 +354,7 @@ for (lines in 1:nrow(data_pca)){
 
 p1_gen_fam<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=fam_oyster, shape=rep, alpha=generation))+
   geom_point(size=4)+ 
-  stat_ellipse(aes(x=PC1, y=PC2, group=groups, color=groups), type="norm", linetype=2, linewidth=1) +
+  stat_ellipse(aes(x=PC1, y=PC2, group=groups, color=groups), type="norm", linetype=1, linewidth=1) +
   scale_shape_manual(values = c(15,17,18))+
   scale_color_manual(values=c( "#000099", "#FF6600", "#009900", "grey", "grey", "grey"))+
   xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
