@@ -16,11 +16,11 @@ R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rsta
 ```
 How to install GitHub packages?
 install.packages("remotes")
-# Installer PoolSeq depuis GitHub
+**# Installer PoolSeq depuis GitHub**
 remotes::install_github("molpopgen/PoolSeq", ref = "v0.3.5.90")
-# Installer ACER depuis GitHub
+**# Installer ACER depuis GitHub**
 remotes::install_github("barghilab/ACER", ref = "v1.0")
-# Installer MullerPlot depuis GitHub pour la version 0.13
+**# Installer MullerPlot depuis GitHub pour la version 0.13**
 remotes::install_github("Farahpour/MullerPlot", ref = "v0.13")
 
 ```
