@@ -351,7 +351,7 @@ for (lines in 1:nrow(pca.res$x)){
 
 ###global PCA
 
-x11()
+
 p1_gen_fam<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=fam_oyster, shape=rep, alpha=generation))+
   geom_point(size=4)+ 
   scale_shape_manual(values = c(15,17,18))+
@@ -390,7 +390,7 @@ p1_gen_fam_with_arrows <- ggplot(as.data.frame(pca.res$x), aes(x = PC1, y = PC2,
             aes(x = PC1, y = PC2, label = varname),
             color = "black", size = 3.2, vjust = 1.3, inherit.aes = FALSE)
 
-x11(width=25,height=15)
+
 layout.matrix <- matrix(c(seq(1,25, by=1)), byrow = TRUE, nrow = 5, ncol = 5)
 
 layout(mat = layout.matrix,
@@ -413,7 +413,7 @@ layout.show(25)
 }
 
 
-x11()
+
 p1_gen_rep_clust<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=clust, shape=rep, alpha=generation))+
   geom_point(size=4)+ 
   scale_shape_manual(values = c(15,17,18))+
@@ -454,10 +454,10 @@ p1_gen_rep_clust<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=clust, sh
 #   xlab(paste("PC3(",round(pca.var$variance.percent[3], 2),"%)",sep=""))+
 #   ylab(paste("PC4(",round(pca.var$variance.percent[4], 2),"%)",sep=""))
 
-x11()
+
 p1_gen_fam
 
-x11()
+
 p2_gen_fam
 
 

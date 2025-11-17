@@ -482,12 +482,12 @@ df_moy_tstv_ancestral <- as.data.frame(mat_moy_tstv_ancestral)
 df_moy_tstv_ancestral$Number <- as.numeric(df_moy_tstv_ancestral$Number)
 write.csv2(df_moy_tstv_ancestral, "./mean_subst_type_ancestral.csv")
 
-x11()
+
 ggplot(data = df_moy_tstv_ancestral, aes(x = Family_generation, y = Number)) +
   geom_col(aes(fill = Substitution, group=TSTV), width = 0.7)+
   scale_fill_manual(values=df_moy_tstv_ancestral$Color) + theme_classic()
 
-x11()
+
 ggplot(data = df_moy_tstv_denovo, aes(x = Family_generation, y = Number)) +
   geom_col(aes(fill = Substitution, group=TSTV), width = 0.7)+
   scale_fill_manual(values=df_moy_tstv_denovo$Color) + theme_classic()
@@ -534,7 +534,7 @@ agg_df_final$Total_Number <- as.numeric(agg_df_final$Total_Number)
 #------------------------------------------------------------------plot datas------------------------------------------------------------------------------
 
 
-x11()
+
 ggplot(data = agg_df_final, aes(x = Family_generation, y = Total_Number)) +
   geom_col(aes(fill = Pair, group=TSTV), width = 0.7)+
   scale_fill_manual(values=agg_df_final$Color) + theme_classic()

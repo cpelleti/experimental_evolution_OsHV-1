@@ -270,7 +270,7 @@ mat_muller_GT3[5,3] <- length(origin$G10[origin$G10 >0])
 mat_muller_GT3[5,4] <- length(origin$G13[origin$G13 >0])
 
 
-x11()
+
 layout(matrix(c(1,2), nrow = 1), widths = c(0.8, 0.2))
 par(mar=c(3, 3, 1, 0))
 m.plot_GT3 <- Muller.plot(attributes = attri, population.data = mat_muller_GT3,
@@ -305,7 +305,7 @@ mat_muller_GT5[5,4] <- length(origin$G15[origin$G15 >0])
 mat_muller_GT5[5,5] <- length(origin$G18[origin$G18 >0])
 
 
-x11()
+
 layout(matrix(c(1,2), nrow = 1), widths = c(0.8, 0.2))
 par(mar=c(3, 3, 1, 0))
 m.plot_GT5 <- Muller.plot(attributes = attri, population.data = mat_muller_GT5,
@@ -356,7 +356,7 @@ mat_muller_GT9[5,5] <- length(origin$G20[origin$G20 >0])
 mat_muller_GT9[5,6] <- length(origin$G24[origin$G24 >0])
 mat_muller_GT9[5,7] <- length(origin$G28[origin$G28 >0])
 
-x11()
+
 layout(matrix(c(1,2), nrow = 1), widths = c(0.8, 0.2))
 par(mar=c(3, 3, 1, 0))
 m.plot_GT9 <- Muller.plot(attributes = attri, population.data = mat_muller_GT9,

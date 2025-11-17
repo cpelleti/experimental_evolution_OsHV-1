@@ -166,7 +166,7 @@ p <- ggplot(viralLoad_family, aes(x=V2, y=V3, fill=Family)) + scale_y_continuous
   ggtitle("Charge virale dans les échantillons au cours \n des générations d'infections") +
   xlab("Charge virale (Nombre de copies/ng ADN)") + ylab("Générations") + theme_classic()
 
-x11()
+
 p
 
 #------------------------------------------------------------------test for significance----------------------------------------------------------------------

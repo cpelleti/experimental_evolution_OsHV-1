@@ -162,7 +162,7 @@ p <- ggplot() +
   geom_line(data = medianaf,aes(x=gen, y=medianaf, group=NA), col = "red", linewidth=1)
 
 
-x11()
+
 p
 
 #------------------------------------------------------------------process datas, replicate 2------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ p <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
   geom_line(data = medianaf,aes(x=gen, y=medianaf, group=NA), col = "red", linewidth=1)
 
 
-x11()
+
 p
 
 
@@ -264,7 +264,7 @@ p <- ggplot(data=df_R1, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 
 
@@ -298,7 +298,7 @@ p <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 
 
@@ -355,7 +355,7 @@ p <- ggplot(data=df_R1, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 
 
@@ -389,7 +389,7 @@ p <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 ######################allelic trajectories in the IRL  #################################
 start=164345
@@ -449,7 +449,7 @@ p <- ggplot(data=df_R1, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 
 
@@ -489,7 +489,7 @@ p <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 
 
@@ -551,7 +551,7 @@ p <- ggplot(data=df_R1, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 
 
@@ -591,7 +591,7 @@ p <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 
 ######################allelic trajectories in the US  #################################
@@ -652,7 +652,7 @@ p <- ggplot(data=df_R1, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
 
 
@@ -692,5 +692,5 @@ p <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
   labs(y="Allele Frequency", x="Generation")
 
 
-x11()
+
 p
