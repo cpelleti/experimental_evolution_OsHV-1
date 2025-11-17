@@ -10,25 +10,25 @@ Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. 
 ## Prerequisites
 To run the analyses and reproduce the results presented in this project, the following prerequisites are required:
 
-<ins>Software:</ins>
-R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), factoextra (v1.0.7), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).
-Geneious Prime v2022.2.2 for genome assembly and alignment visualization.
-Fastp v0.20.1 for read quality filtering and trimming.
-Bowtie2 v2.4.1 for read mapping.
-metaSPAdes v3.15.4 for de novo genome assembly.
-Freebayes v1.3.5 for variant calling.
-MAFFT v1.4.0 for sequence alignment.
-vt v2005.11.10 for variant normalization and deduplication.
+<ins>Software:</ins>\
+R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), factoextra (v1.0.7), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).\
+Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
+Fastp v0.20.1 for read quality filtering and trimming.\
+Bowtie2 v2.4.1 for read mapping.\
+metaSPAdes v3.15.4 for de novo genome assembly.\
+Freebayes v1.3.5 for variant calling.\
+MAFFT v1.4.0 for sequence alignment.\
+vt v2005.11.10 for variant normalization and deduplication.\
 
-<ins>Datasets:</ins>
-Raw sequencing reads for 126 OsHV-1 µVar libraries, publicly available in NCBI SRA under Bioproject PRJNA1216400 (accession numbers SAMN46433918 to SAMN46434013).
+<ins>Datasets:</ins>\
+Raw sequencing reads for 126 OsHV-1 µVar libraries, publicly available in NCBI SRA under Bioproject PRJNA1216400 (accession numbers SAMN46433918 to SAMN46434013).\
 Reference genome of Magallana gigas (GCF_902806645.1) for host read filtering.
 
-<ins>Hardware Requirements:</ins>
-A standard desktop or laptop computer with at least 16 GB RAM for genome assembly and variant calling.
+<ins>Hardware Requirements:</ins>\
+A standard desktop or laptop computer with at least 16 GB RAM for genome assembly and variant calling.\
 Multi-core CPU recommended for parallelized analyses in metaSPAdes, Bowtie2, and Freebayes.
 
-<ins>Usage Notes:</ins>
+<ins>Usage Notes:</ins>\
 Scripts are designed to be run sequentially, starting from raw data preprocessing through to statistical analyses, variant calling, and visualization.
 
 ## Contents
@@ -42,10 +42,10 @@ Scripts are designed to be run sequentially, starting from raw data preprocessin
 | 05_allelic_trajectories_Fig9.R  | R script to compute allelic frequency trajectories and generate Figure 9. |
 | 06_muller_plot_Fig10.R  | R script to visualize genotype emergence and lineage dynamics using Muller plots (Figure 10). |
 
-File formats:
-.R – R scripts, editable in RStudio or any text editor.
-.sh.txt – Shell script for Linux/macOS terminal execution.
-.csv or .tsv (in test_datas/) – data tables for input/output, compatible with R, Excel, or any text editor.
+File formats:\
+.R – R scripts, editable in RStudio or any text editor.\
+.sh.txt – Shell script for Linux/macOS terminal execution.\
+.csv or .tsv (in test_datas/) – data tables for input/output, compatible with R, Excel, or any text editor.\
 
 This structure allows sequential execution of the workflow from variant calling to statistical analyses and visualization of results.
 
@@ -54,42 +54,42 @@ This repository provides scripts and pipelines for the statistical and genomic a
 
 1. Statistical analysis of mortality and viral load
 
-Input: Mortality and viral load data across oyster populations and generations.
-Execution: script 02_stats_mortalities_viralLoad_Fig3.R
+Input: Mortality and viral load data across oyster populations and generations.\
+Execution: script 02_stats_mortalities_viralLoad_Fig3.R\
 Output: Graphical representations of mortality and viral load; ANOVA tables showing differences among populations and generations.
 
 2. Assembly of viral NR-genomes
 
-Input: Raw Illumina paired-end reads from OsHV-1 infected oyster tissues.
-Execution: Quality filter and trim reads using Fastp ; Remove host sequences by mapping reads to the M. gigas reference genome using Bowtie2; Assemble OsHV-1 reads de novo with metaSPAdes ; Identify OsHV-1 contigs with BLASTn and reorder in Geneious to reconstruct NR-genomes.
+Input: Raw Illumina paired-end reads from OsHV-1 infected oyster tissues.\
+Execution: Quality filter and trim reads using Fastp ; Remove host sequences by mapping reads to the M. gigas reference genome using Bowtie2; Assemble OsHV-1 reads de novo with metaSPAdes ; Identify OsHV-1 contigs with BLASTn and reorder in Geneious to reconstruct NR-genomes.\
 Output: Non-redundant viral genomes (NR-genomes) for each viral suspension.
 
 3. Variant calling
 
-Input: Filtered reads and the artificial OsHV-1 major NR-consensus.
-Execution: script 01_variant_calling.sh
-Post-processing: Normalize, decompose, sort, and deduplicate variants using vt, then retain variants with ≥10% frequency.
+Input: Filtered reads and the artificial OsHV-1 major NR-consensus._
+Execution: script 01_variant_calling.sh\
+Post-processing: Normalize, decompose, sort, and deduplicate variants using vt, then retain variants with ≥10% frequency.\
 Output: VCF files containing intra-individual Single Nucleotide Variants (iSNVs).
 
 4. Substitution analysis and clustering
 
-Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).
-Execution: script 03_stats_ts_tv_Fig5.R
-Analyze transitions/transversions with BCFtools stats ; Average substitution counts per generation and population ; Visualize using ggplot2 ; Perform PCA on iSNV frequencies to explore sample clustering using factoextra in R.
+Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
+Execution: script 03_stats_ts_tv_Fig5.R\
+Analyze transitions/transversions with BCFtools stats ; Average substitution counts per generation and population ; Visualize using ggplot2 ; Perform PCA on iSNV frequencies to explore sample clustering using factoextra in R.\
 Output: Plots showing substitution patterns, ts/tv ratios, and sample clustering across oyster populations.
 
 5. Selection detection
 
-Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).
-Execution: scripts 04_Genomic_selection_detection_Fig6-7-8.R and 05_allelic_trajectories_Fig9.R
-Compare allele frequencies between initial and evolved generations ; Apply Cochran-Mantel-Haenszel (CMH) tests using ACER in R ; Adjust p-values using FDR and visualize significant iSNVs with Manhattan plots.
+Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
+Execution: scripts 04_Genomic_selection_detection_Fig6-7-8.R and 05_allelic_trajectories_Fig9.R\
+Compare allele frequencies between initial and evolved generations ; Apply Cochran-Mantel-Haenszel (CMH) tests using ACER in R ; Adjust p-values using FDR and visualize significant iSNVs with Manhattan plots.\
 Output: iSNVs under selection and their allele frequency trajectories across generations.
 
 6. Genotype proportion visualization
 
-Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).
-Execution: script 06_muller_plot_Fig10.R
-Assign iSNVs to their origin based on G0 viral inoculum ; Group variants by geographic origin and visualize relative abundances using MullerPlot in R.
+Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
+Execution: script 06_muller_plot_Fig10.R\
+Assign iSNVs to their origin based on G0 viral inoculum ; Group variants by geographic origin and visualize relative abundances using MullerPlot in R.\
 Output: Muller plots showing lineage emergence and dynamics throughout the experimental evolution.
 
 
@@ -99,6 +99,6 @@ For help with this bioinformatics project, please reach out to Camille Pelletier
 ## Authors and acknowledgment
 Authors : Camille Pelletier, Nicole Faury, Mickaël Mege, Lionel Dégremont, Maelle Hattinguais, Jeremie Vidal-Dupiol, Germain Chevignon, Maude Jacquot, Benjamin Morga.
 
-We thank the staff of the Ifremer station at La Tremblade (ASIM), Frédéric Girardin and his team (Plateforme des Mollusques Marins de La Tremblade PMMLT), and Virginie François and his team (Plateforme des Mollusques Marins de Bouin PMMB). We also thank the SEBIMER team for maintaining bioinformatics tools.
-C.P.  was financially supported by a grant from the Ifremer Scientific Board and the Nouvelle-Aquitaine region. The present study was supported by scientific direction of Ifremer in context of the GT Huître project and by the FEAMP Gestinnov (FFEA470020FA1000007) GESTINNOV project and by DGAL (French General Directorate for Food) through the National Reference Laboratory for Mollusc Diseases and by the European-Union Reference Laboratory for Mollusc Diseases, Ifremer, La Tremblade. The authors acknowledge the Pôle de Calcul et de Données Marines (PCDM;  https://wwz.ifremer.fr/en/Research-Technology/Research-Infrastructures/Digital-infrastructures/Computation-Centre) for providing DATARMOR computing and storage resources.
+We thank the staff of the Ifremer station at La Tremblade (ASIM), Frédéric Girardin and his team (Plateforme des Mollusques Marins de La Tremblade PMMLT), and Virginie François and his team (Plateforme des Mollusques Marins de Bouin PMMB). We also thank the SEBIMER team for maintaining bioinformatics tools.\
+C.P.  was financially supported by a grant from the Ifremer Scientific Board and the Nouvelle-Aquitaine region. The present study was supported by scientific direction of Ifremer in context of the GT Huître project and by the FEAMP Gestinnov (FFEA470020FA1000007) GESTINNOV project and by DGAL (French General Directorate for Food) through the National Reference Laboratory for Mollusc Diseases and by the European-Union Reference Laboratory for Mollusc Diseases, Ifremer, La Tremblade. The authors acknowledge the Pôle de Calcul et de Données Marines (PCDM;  https://wwz.ifremer.fr/en/Research-Technology/Research-Infrastructures/Digital-infrastructures/Computation-Centre) for providing DATARMOR computing and storage resources.\
 C.P. and co-authors thank J.M.E. for the discussions and exchanges. We would like to thank Bruno Petton and his team PHYTNESS for sampling the virus in the Brittany area, as well as Johan Vieira and the CAPENA team for sampling OsHV-1 in Arcachon Bay. 
