@@ -11,7 +11,7 @@ Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. 
 To run the analyses and reproduce the results presented in this project, the following prerequisites are required:
 
 **Software:**\
-R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), tidyr (v1.3.1), ggpubr (v0.6.1), tidyverse(v2.0.0), dplyr (v1.1.4), factoextra (v1.0.7), poolSeq (v0.3.5.90), NbClust (v3.0.1), knitr (v1.50), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).\
+R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), tidyr (v1.3.1), ggpubr (v0.6.1), tidyverse(v2.0.0), dplyr (v1.1.4), factoextra (v1.0.7), poolSeq (v0.3.5.90), NbClust (v3.0.1), knitr (v1.50), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).
 
 ```
 How to install GitHub packages?
