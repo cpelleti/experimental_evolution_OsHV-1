@@ -15,7 +15,7 @@ ipak <- function(pkg){
 }
 
 ipak(unique(
-  c( "tidyverse", "dplyr", "factoextra", "poolSeq", "NbClust") # plot
+  c( "tidyverse", "dplyr", "factoextra", "poolSeq", "NbClust", "ggpubr", "gggenes") # plot
 ) )
 
 addline_format <- function(x,...){
