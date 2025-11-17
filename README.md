@@ -43,9 +43,9 @@ Scripts are designed to be run sequentially, starting from raw data preprocessin
 | 06_muller_plot_Fig10.R  | R script to visualize genotype emergence and lineage dynamics using Muller plots (Figure 10). |
 
 **File formats:**\
-        .R – R scripts, editable in RStudio or any text editor.\
-        .sh.txt – Shell script for Linux/macOS terminal execution.\
-        .csv or .tsv (in test_datas/) – data tables for input/output, compatible with R, Excel, or any text editor.
+&nbsp;&nbsp;&nbsp;&nbsp;.R – R scripts, editable in RStudio or any text editor.\
+&nbsp;&nbsp;&nbsp;&nbsp;.sh.txt – Shell script for Linux/macOS terminal execution.\
+&nbsp;&nbsp;&nbsp;&nbsp;.csv or .tsv (in test_datas/) – data tables for input/output, compatible with R, Excel, or any text editor.
 
 This structure allows sequential execution of the workflow from variant calling to statistical analyses and visualization of results.
 
