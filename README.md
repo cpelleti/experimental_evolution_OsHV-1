@@ -32,7 +32,24 @@ Usage Notes:
 Scripts are designed to be run sequentially, starting from raw data preprocessing through to statistical analyses, variant calling, and visualization.
 
 ## Contents
+Folder/File	Description
+test_datas/	Contains example datasets for testing the scripts and reproducing the analyses.
+01_variant_calling.sh	Shell script for variant calling pipeline, including read mapping and Freebayes variant detection.
+02_stats_mortalities_viralLoad_Fig3.R	R script for statistical analysis of mortality and viral load across oyster generations and populations, and generation of Figure 3.
+03_stats_ts_tv_Fig5.R	R script to analyze transition/transversion ratios, substitution patterns, and generate Figure 5.
+04_Genomic_selection_detection_Fig6-7-8.R	R script for detecting selection signatures across viral generations and populations, generating Figures 6, 7, and 8.
+05_allelic_trajectories_Fig9.R	
+R script to compute allelic frequency trajectories and generate Figure 9.
 
+06_muller_plot_Fig10.R	R script to visualize genotype emergence and lineage dynamics using Muller plots (Figure 10).
+
+
+File formats:
+.R – R scripts, editable in RStudio or any text editor.
+.sh.txt – Shell script for Linux/macOS terminal execution.
+.csv or .tsv (in test_datas/) – data tables for input/output, compatible with R, Excel, or any text editor.
+
+This structure allows sequential execution of the workflow from variant calling to statistical analyses and visualization of results.
 
 ## Contact
 For help with this bioinformatics project, please reach out to Camille Pelletier (camille.pelletier@ifremer.fr), Maude Jacquot (maude.jacquot@ifremer.fr), Germain Chevignon (germain.chevignon@ifremer.fr), or Benjamin Morga (benjamin.morga@ifremer.fr). They can assist with any questions, troubleshooting, or clarifications. Feel free to contact them directly or through the appropriate communication channels.
