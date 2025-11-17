@@ -12,11 +12,16 @@ To run the analyses and reproduce the results presented in this project, the fol
 
 **Software:**\
 R v4.2.2 (or later) with the following packages: ggplot2 (v3.5.2 or later), rstatix (v0.7.2), tidyr (v1.3.1), ggpubr (v0.6.1), tidyverse(v2.0.0), dplyr (v1.1.4), factoextra (v1.0.7), poolSeq (v0.3.5.90), NbClust (v3.0.1), knitr (v1.50), ACER (v1.0), MullerPlot (v0.13), stats (base R), BCFtools (v1.17).\
+
 ```
-How to install GiHub packages?
+How to install GitHub packages?
 install.packages("remotes")
 # Installer PoolSeq depuis GitHub
 remotes::install_github("molpopgen/PoolSeq", ref = "v0.3.5.90")
+# Installer ACER depuis GitHub
+remotes::install_github("barghilab/ACER", ref = "v1.0")
+# Installer MullerPlot depuis GitHub pour la version 0.13
+remotes::install_github("Farahpour/MullerPlot", ref = "v0.13")
 
 ```
 
