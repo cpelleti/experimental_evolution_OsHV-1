@@ -55,7 +55,7 @@ MAFFT v1.4.0 for sequence alignment.\
 vt v2005.11.10 for variant normalization and deduplication.
 
 **Software requirements for analyses:**\
-Geneious Prime v2022.2.2 for genome assembly and alignment visualization.\
+Geneious Prime v2022.2.2 for genome assembly and alignment visualization.
 
 
 **Datasets:**\
