@@ -109,6 +109,7 @@ write.csv2(df_allCov, "./data_frame_allelic_coverage_indiduals.csv")
 #-------------1 - perform an ACP analysis for all samplesusing similarities between observed SNPs
 
 df_allFreq <- df_allFreq[df_allFreq$TYPE == "snp",]
+df_allCov <- df_allCov[df_allCov$TYPE == "snp",]
 dat = na.omit(2*asin(sqrt(df_allFreq[6:101]))) 
 dat <- dat[rowSums(dat) > 0,]
 ####add to the matrix columns to describe shared SNPs,etc
@@ -185,64 +186,7 @@ for (i in 1:nrow(dat)){
   } else {
     dat[i,98] <- "shared_not_all" 
   }
-#   }  else if (sum_GEN0_i > 0 & sum_GEN5_i  >  0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G0_G5" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i== 0 & sum_GEN10_i  > 0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G0_G10" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i  ==  0 & sum_GEN10_i ==0 & sum_GEN13_i  > 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G0_G13" 
-#   }else if (sum_GEN0_i>0 & sum_GEN5_i  ==  0 & sum_GEN10_i  == 0 & sum_GEN13_i ==0 & sum_GEN15_i  > 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G0_G15" 
-#   }else if (sum_GEN0_i>0 & sum_GEN5_i  ==  0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i==0 & sum_GEN18_i>0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G0_G18" 
-#   }else if (sum_GEN0_i>0 & sum_GEN5_i  ==  0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i>0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G0_G20" 
-#   }else if (sum_GEN0_i>0 & sum_GEN5_i  ==  0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i>0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <-"G0_G24" 
-#   }else if (sum_GEN0_i>0 & sum_GEN5_i  ==  0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i>0 ){
-#     dat[i,98] <- "G0_G28" 
-#   } else if (sum_GEN0_i == 0 & sum_GEN5_i  >  0 & sum_GEN10_i>0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G5_G10" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i >0 & sum_GEN10_i==0 & sum_GEN13_i  > 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G5_G13" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i >0 & sum_GEN10_i  == 0 & sum_GEN13_i ==0 & sum_GEN15_i  > 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G5_G15" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i >0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i==0 & sum_GEN18_i>0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G5_G18" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i >0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i>0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <- "G5_G20" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i >0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i>0 & sum_GEN28_i == 0 ){
-#     dat[i,98] <-"G5_G24" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i >0 & sum_GEN10_i  == 0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i>0 ){
-#     dat[i,98] <- "G5_G28" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i>0 & sum_GEN13_i  > 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <- "G10_G13" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i >0 & sum_GEN13_i ==0 & sum_GEN15_i  > 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <- "G10_G15" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i >0 & sum_GEN13_i  == 0 & sum_GEN15_i==0 & sum_GEN18_i>0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <- "G10_G18" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i >0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i>0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <- "G10_G20" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i >0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i>0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <-"G10_G24" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i >0 & sum_GEN13_i  == 0 & sum_GEN15_i  == 0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i>0 ){
-#   dat[i,98] <- "G10_G28" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i ==0 & sum_GEN13_i  == 0 & sum_GEN15_i==0 & sum_GEN18_i>0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <- "G15_G18" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i ==0 & sum_GEN13_i  == 0 & sum_GEN15_i >0 & sum_GEN18_i == 0 & sum_GEN20_i>0 & sum_GEN24_i == 0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <- "G15_G20" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i ==0 & sum_GEN13_i  == 0 & sum_GEN15_i >0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i>0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <-"G15_G24" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i ==0 & sum_GEN13_i  == 0 & sum_GEN15_i >0 & sum_GEN18_i == 0 & sum_GEN20_i == 0 & sum_GEN24_i == 0 & sum_GEN28_i>0 ){
-#   dat[i,98] <- "G15_G28" 
-#   }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i ==0 & sum_GEN13_i  == 0 & sum_GEN15_i ==0 & sum_GEN18_i == 0 & sum_GEN20_i>0 & sum_GEN24_i>0 & sum_GEN28_i == 0 ){
-#   dat[i,98] <-"G20_G24" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i ==0 & sum_GEN13_i  == 0 & sum_GEN15_i==0 & sum_GEN18_i == 0 & sum_GEN20_i>0 & sum_GEN24_i == 0 & sum_GEN28_i>0 ){
-#   dat[i,98] <- "G20_G28" 
-# }else if (sum_GEN0_i ==  0 & sum_GEN5_i ==0 & sum_GEN10_i ==0 & sum_GEN13_i  == 0 & sum_GEN15_i==0 & sum_GEN18_i == 0 & sum_GEN20_i==0 & sum_GEN24_i>0 & sum_GEN28_i>0 ){
-#   dat[i,98] <- "G24_G28" }
-  
-  
+
   #####add information of shared alleles between replicates
   R1_i <- as.numeric(cbind(dat[i,1:3], dat[i,7:9],dat[i,13:15],dat[i,19:21],dat[i,25:27],dat[i,31:33],dat[i,37:39],dat[i,43:45],dat[i,49:51],
                            dat[i,55:57],dat[i,61:63],dat[i,67:69],dat[i,73:75],dat[i,79:81],dat[i,85:87],dat[i,91:93] ))
@@ -352,13 +296,15 @@ for (lines in 1:nrow(data_pca)){
 ###global PCA
 
 
-p1_gen_fam<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=fam_oyster, shape=rep, alpha=generation))+
+p1_gen_fam<-ggplot(as.data.frame(pca_res.tmp),aes(x=PC1,y=PC2, col=fam_oyster, shape=rep, alpha=generation))+
   geom_point(size=4)+ 
   stat_ellipse(aes(x=PC1, y=PC2, group=groups, color=groups), type="norm", linetype=1, linewidth=1) +
   scale_shape_manual(values = c(15,17,18))+
   scale_color_manual(values=c( "#000099", "#FF6600", "#009900", "grey", "grey", "grey"))+
   xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
   ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))+ theme_classic()
+
+p1_gen_fam
 
 # Extract variables coordinate (loadings)
 loadings <- as.data.frame(pca.res$rotation[, 1:2])  # PC1 et PC2
@@ -408,275 +354,7 @@ layout.show(25)
   print(PC2)
   
   
-  plot(pca_res.tmp[,k],pca_res.tmp[,k+1], col=alpha(pca_res.tmp$V97,pca_res.tmp$V98),xaxt='n',yaxt='n', pch=pca_res.tmp$V99, xlab=paste(colnames(pca_res.tmp)[k]," (",round(pca.var$variance.percent[k], 2),"%)",sep=""), ylab=paste(colnames(pca_res.tmp)[k+1]," (",round(pca.var$variance.percent[k+1], 2),"%)",sep=""))
+  plot(pca_res.tmp[,k],pca_res.tmp[,k+1], col=alpha(pca_res.tmp$V98,pca_res.tmp$V99),xaxt='n',yaxt='n', pch=pca_res.tmp$V100, xlab=paste(colnames(pca_res.tmp)[k]," (",round(pca.var$variance.percent[k], 2),"%)",sep=""), ylab=paste(colnames(pca_res.tmp)[k+1]," (",round(pca.var$variance.percent[k+1], 2),"%)",sep=""))
  
 
 }
-
-
-
-p1_gen_rep_clust<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=clust, shape=rep, alpha=generation))+
-  geom_point(size=4)+ 
-  scale_shape_manual(values = c(15,17,18))+
-  xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
-  ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))+ theme_classic()
-
-# 
-# p2_gen_fam<-ggplot(as.data.frame(pca.res$x),aes(x=PC3,y=PC4, col=fam_oyster, shape=generation))+
-#   geom_point(size=2)+
-#   scale_shape_manual(values = c(0,15,17,18, 1,2,5,6,19))+
-#   xlab(paste("PC3(",round(pca.var$variance.percent[3], 2),"%)",sep=""))+
-#   ylab(paste("PC4(",round(pca.var$variance.percent[4], 2),"%)",sep=""))
-# 
-# p1_rep_fam<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=fam_oyster, shape=rep))+
-#   geom_point(size=2)+ 
-#   scale_shape_manual(values = c(15,17))+
-#   xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
-#   ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))
-# 
-# 
-# p2_rep_fam<-ggplot(as.data.frame(pca.res$x),aes(x=PC3,y=PC4, col=fam_oyster, shape=rep))+
-#   geom_point(size=2)+
-#   scale_shape_manual(values = c(15,17))+
-#   xlab(paste("PC3(",round(pca.var$variance.percent[3], 2),"%)",sep=""))+
-#   ylab(paste("PC4(",round(pca.var$variance.percent[4], 2),"%)",sep=""))
-# 
-# 
-# p1_gen_rep<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=rep, shape=generation))+
-#   geom_point(size=2)+ 
-#   scale_shape_manual(values = c(0,15,17,18, 1,2,5,6,19))+
-#   xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
-#   ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))
-# 
-# 
-# p2_gen_rep<-ggplot(as.data.frame(pca.res$x),aes(x=PC3,y=PC4, col=rep, shape=generation))+
-#   geom_point(size=2)+
-#   scale_shape_manual(values = c(0,15,17,18, 1,2,5,6,19))+
-#   xlab(paste("PC3(",round(pca.var$variance.percent[3], 2),"%)",sep=""))+
-#   ylab(paste("PC4(",round(pca.var$variance.percent[4], 2),"%)",sep=""))
-
-
-p1_gen_fam
-
-
-p2_gen_fam
-
-
-#####plot individuals as an ACP for GT3 samples ####################################
-df_GT3 <- df_allFreq[6:29]
-df_GT3<- df_GT3 %>% mutate_at(1:24, as.numeric)
-
-var <- apply(df_GT3, 1, function(x) var(na.omit(x)))
-ind1 <- which(var == 0)
-ind2 <- which(rowSums(is.na(df_GT3))>0)
-ind<-sort(unique(c(ind1,ind2)))
-
-if (length(ind) != 0) {
-  my_freqf_GT3<-df_GT3[-ind,]
-}
-
-dat_GT3 = na.omit(2*asin(sqrt(my_freqf_GT3)))
-
-sampleIDs<-colnames(dat_GT3)
-splits <- unlist(strsplit(sampleIDs, "[_]"))
-#fam_oyster <- factor(splits[grep("GT",splits)])
-splits <- splits[-grep("T",splits)]
-generation_GT3 <- as.factor(splits[grep("G",splits)])
-
-rep_GT3<- factor(splits[grep("R",splits)])
-pcadata_GT3<-as.data.frame(t(dat_GT3))
-row.names(pcadata_GT3)<-sampleIDs
-
-
-pca.res <- prcomp(pcadata_GT3, retx=TRUE, center = TRUE, scale. =TRUE)
-pca.var<-get_eigenvalue(pca.res)
-
-p1_GT3<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=rep_GT3, shape=generation_GT3))+
-  geom_point()+
-  xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
-  ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))
-
-
-p2_GT3<-ggplot(as.data.frame(pca.res$x),aes(x=PC3,y=PC4, col=rep_GT3, shape=generation_GT3))+
-  geom_point()+
-  xlab(paste("PC3(",round(pca.var$variance.percent[3], 2),"%)",sep=""))+
-  ylab(paste("PC4(",round(pca.var$variance.percent[4], 2),"%)",sep=""))
-
-
-#####plot individuals as an ACP for GT5 samples ####################################
-df_GT5 <- df_allFreq[30:59]
-df_GT5<- df_GT5 %>% mutate_at(1:30, as.numeric)
-
-var <- apply(df_GT5, 1, function(x) var(na.omit(x)))
-ind1 <- which(var == 0)
-ind2 <- which(rowSums(is.na(df_GT5))>0)
-ind<-sort(unique(c(ind1,ind2)))
-
-if (length(ind) != 0) {
-  my_freqf_GT5<-df_GT5[-ind,]
-}
-
-dat_GT5 = na.omit(2*asin(sqrt(my_freqf_GT5)))
-
-sampleIDs<-colnames(dat_GT5)
-splits <- unlist(strsplit(sampleIDs, "[_]"))
-#fam_oyster <- factor(splits[grep("GT",splits)])
-splits <- splits[-grep("T",splits)]
-generation_GT5 <- as.factor(splits[grep("G",splits)])
-
-rep_GT5<- factor(splits[grep("R",splits)])
-pcadata_GT5<-as.data.frame(t(dat_GT5))
-row.names(pcadata_GT5)<-sampleIDs
-
-
-pca.res <- prcomp(pcadata_GT5, retx=TRUE, center = TRUE, scale. =TRUE)
-pca.var<-get_eigenvalue(pca.res)
-
-p1_GT5<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=rep_GT5, shape=generation_GT5))+
-  geom_point()+
-  xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
-  ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))
-
-
-p2_GT5<-ggplot(as.data.frame(pca.res$x),aes(x=PC3,y=PC4, col=rep_GT5, shape=generation_GT5))+
-  geom_point()+
-  xlab(paste("PC3(",round(pca.var$variance.percent[3], 2),"%)",sep=""))+
-  ylab(paste("PC4(",round(pca.var$variance.percent[4], 2),"%)",sep=""))
-
-
-
-#####plot individuals as an ACP for GT9 samples ####################################
-df_GT9 <- df_allFreq[60:101]
-df_GT9<- df_GT9 %>% mutate_at(1:42, as.numeric)
-
-var <- apply(df_GT9, 1, function(x) var(na.omit(x)))
-ind1 <- which(var == 0)
-ind2 <- which(rowSums(is.na(df_GT9))>0)
-ind<-sort(unique(c(ind1,ind2)))
-
-if (length(ind) != 0) {
-  my_freqf_GT9<-df_GT9[-ind,]
-}
-
-dat_GT9 = na.omit(2*asin(sqrt(my_freqf_GT9)))
-
-sampleIDs<-colnames(dat_GT9)
-splits <- unlist(strsplit(sampleIDs, "[_]"))
-#fam_oyster <- factor(splits[grep("GT",splits)])
-splits <- splits[-grep("T",splits)]
-generation_GT9 <- as.factor(splits[grep("G",splits)])
-
-rep_GT9<- factor(splits[grep("R",splits)])
-pcadata_GT9<-as.data.frame(t(dat_GT9))
-row.names(pcadata_GT9)<-sampleIDs
-
-
-pca.res <- prcomp(pcadata_GT9, retx=TRUE, center = TRUE, scale. =TRUE)
-pca.var<-get_eigenvalue(pca.res)
-
-p1_GT9<-ggplot(as.data.frame(pca.res$x),aes(x=PC1,y=PC2, col=rep_GT9, shape=generation_GT9))+
-  geom_point()+
-  scale_shape_manual(values = c(15,16,17,18,19, 1,2,5,6))+
-  xlab(paste("PC1(",round(pca.var$variance.percent[1], 2),"%)",sep=""))+
-  ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))
-
-
-p2_GT9<-ggplot(as.data.frame(pca.res$x),aes(x=PC3,y=PC4, col=rep_GT9, shape=generation_GT9))+
-  geom_point()+
-  scale_shape_manual(values = c(15,16,17,18,19, 1,2,5,6))+
-  xlab(paste("PC3(",round(pca.var$variance.percent[3], 2),"%)",sep=""))+
-  ylab(paste("PC4(",round(pca.var$variance.percent[4], 2),"%)",sep=""))
-
-
-#------------------------------------------------------------------process datas------------------------------------------------------------------------------
-#-------------2 - testing for effective size
-
-##initial parameter
-input_gen=c(0,10,20,30,40,50,60)
-input_gen2 = c(0,60)
-input_rep=2
-
-
-
-var <- apply(df_allFreq[,6:101], 1, function(x) var(na.omit(x)))
-ind1 <- which(var == 0)
-ind2 <- which(rowSums(is.na(df_allFreq[,6:101]))>0)
-ind3 <- which(apply(df_allCov[,6:101], 1, function(x) min(x))<5)
-ind<-sort(unique(c(ind1,ind2)))
-
-if (length(ind) != 0) {
-  my_freqf<-df_allFreq[-ind,]
-  my_cov<-df_allCov[-ind,]
-}
-
-df_allCov[df_allCov == 0] <- 1
-my_freqf <- df_allFreq %>% mutate_at(6:101, as.numeric)
-my_cov <- df_allCov %>% mutate_at(6:101, as.numeric)
-
-
-sampleIDs<-colnames(my_freqf)
-splits <- unlist(strsplit(sampleIDs, "_[1234567]$"))
-
-
-med_Ne=NULL
-for (i in 1:input_rep){
-  ne=NULL
-  index=splits
-  af=my_freqf
-  cov=my_cov
-  NB_trials <- 100
-  off <- 1
-  nb_obs <- dim(af)[1]
-  for(j in 1:NB_trials){
-    set.seed(off)
-    ind <- sample(x = 1:nb_obs, size = 814)
-    ne <- rbind(ne, 
-                data.frame(trial = j,
-                           ne = estimateNe(p0 = af[ind,colnames(af)[1]], pt = af[ind,colnames(af)[2]], 
-                                           cov0 = cov[ind,colnames(af)[1]], covt = cov[ind,colnames(af)[2]],
-                                           t = 5, 
-                                           ploidy=2, 
-                                           truncAF=0.05, 
-                                           method=c("P.planI"), 
-                                           poolSize=rep(1000, times=2), 
-                                           Ncensus=1250)))
-    off <- off+1
-  }
-  Ne <- median(ne$ne)
-  ind <- which(is.na(ne$ne) | ne$ne<0)
-  if(length(ind)>0){ne <- ne[-ind, ]}
-  med_Ne<-c(med_Ne,round(median(ne$ne)))
-}
-med_Ne<-as.integer(med_Ne)
-
-
-
-#-------------3 - process adapted CMH
-df_allFreq <- read.csv2("./Mean_data_frame_allelic_frequencies_individuals.csv")
-df_allCov <- read.csv2("./Mean_data_frame_allelic_coverage_individuals.csv")
-
-df_allCov[df_allCov == 0] <- 1
-my_freqf <- df_allFreq %>% mutate_at(6:37, as.numeric)
-my_cov <- df_allCov %>% mutate_at(6:37, as.numeric)
-
-
-sampleIDs<-colnames(my_freqf[6:37])
-splits <- unlist(strsplit(sampleIDs, "M_"))
-Generations <- splits[grep("G",splits)]
-
-index=Generations
-af=my_freqf
-cov=my_cov
-
-
-p.values<-adapted.cmh.test(freq = as.matrix(my_freqf[6:37]), 
-                           coverage = as.matrix(my_cov[6:37]), 
-                           Ne = as.integer(c(70,70)), 
-                           gen = c(0,10,13,5, 0, 10, 15, 18, 5, 0, 10, 15, 20,24,28,5), 
-                           repl = 1:2,
-                           order = 1,
-                           mincov = 1,
-                           poolSize = c(3,3,3,3,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3), 
-                           IntGen = TRUE)
-
-
