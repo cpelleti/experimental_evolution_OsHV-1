@@ -119,14 +119,14 @@ Output: Plots showing substitution patterns, ts/tv ratios, and sample clustering
 **5. Selection detection**
 
 Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
-Execution: scripts 04_Genomic_selection_detection_Fig6-7-8.R and 05_allelic_trajectories_Fig9.R\
+Execution: scripts 04_Genomic_selection_detection_Fig6-7-8.R ; 05_CMH.R and 06_allelic_trajectories_Fig9.R\
 Compare allele frequencies between initial and evolved generations ; Apply Cochran-Mantel-Haenszel (CMH) tests using ACER in R ; Adjust p-values using FDR and visualize significant iSNVs with Manhattan plots.\
 Output: iSNVs under selection and their allele frequency trajectories across generations.
 
 **6. Genotype proportion visualization**
 
 Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
-Execution: script 06_muller_plot_Fig10.R\
+Execution: script 07_muller_plot_Fig10.R\
 Assign iSNVs to their origin based on G0 viral inoculum ; Group variants by geographic origin and visualize relative abundances using MullerPlot in R.\
 Output: Muller plots showing lineage emergence and dynamics throughout the experimental evolution.
 
