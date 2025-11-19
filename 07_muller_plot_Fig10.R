@@ -15,7 +15,7 @@ ipak <- function(pkg){
 }
 
 ipak(unique(
-  c( "tidyverse", "dplyr", "knitr") # plot
+  c( "tidyverse", "dplyr", "knitr",'MullerPlot') # plot
 ) )
 
 addline_format <- function(x,...){
@@ -357,13 +357,13 @@ mat_muller_GT9[5,6] <- length(origin$G24[origin$G24 >0])
 mat_muller_GT9[5,7] <- length(origin$G28[origin$G28 >0])
 
 
-layout(matrix(c(1,2), nrow = 1), widths = c(0.8, 0.2))
-par(mar=c(3, 3, 1, 0))
+##------------------------------plot datas as muller plot----------------------------------------------------
+m.plot_GT3 <- Muller.plot(attributes = attri, population.data = mat_muller_GT3,
+                          data.method = "table", time.interval.method = "linear",mgp=c(2,0.5,0))
+m.plot_GT5 <- Muller.plot(attributes = attri, population.data = mat_muller_GT5,
+                          data.method = "table", time.interval.method = "linear",mgp=c(2,0.5,0))
 m.plot_GT9 <- Muller.plot(attributes = attri, population.data = mat_muller_GT9,
                           data.method = "table", time.interval.method = "linear",mgp=c(2,0.5,0))
 
 
 
-#------------------------------------------------------------------plot datas as Muller plot------------------------------------------------------------------------------
-
-plot_grid(m.plot_GT3, m.plot_GT5, m.plot_GT9, labels = c('GT3', 'GT5', 'GT9'), label_size = 12)
