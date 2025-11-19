@@ -599,7 +599,7 @@ agg_df_final$Total_Number <- as.numeric(agg_df_final$Total_Number)
 
 
 
-ggplot(data = agg_df_final, aes(x = Family_generation, y = Total_Number)) +
+p_global_subst <- ggplot(data = agg_df_final, aes(x = Family_generation, y = Total_Number)) +
   geom_col(aes(fill = Pair, group=TSTV), width = 0.7)+
   scale_fill_manual(values=agg_df_final$Color) + theme_classic()
 
