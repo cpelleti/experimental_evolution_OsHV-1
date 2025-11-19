@@ -15,7 +15,7 @@ ipak <- function(pkg){
 }
 
 ipak(unique(
-  c( "tidyverse", "dplyr") # plot
+  c( "tidyverse", "dplyr","patchwork", "ggnewscale") # plot
 ) )
 
 addline_format <- function(x,...){
@@ -477,20 +477,84 @@ for (i in 1:length(list_FGS)){
 
 df_moy_tstv_denovo <- as.data.frame(mat_moy_tstv_denovo)
 df_moy_tstv_denovo$Number <- as.numeric(df_moy_tstv_denovo$Number)
+df_moy_tstv_denovo$Family_generation <- gsub("_G5$", "_G05", df_moy_tstv_denovo$Family_generation)
+df_moy_tstv_denovo <- df_moy_tstv_denovo[order(df_moy_tstv_denovo$Family_generation), ]
 write.csv2(df_moy_tstv_denovo, "./mean_subst_type_denovo.csv")
 df_moy_tstv_ancestral <- as.data.frame(mat_moy_tstv_ancestral)
 df_moy_tstv_ancestral$Number <- as.numeric(df_moy_tstv_ancestral$Number)
+df_moy_tstv_ancestral$Family_generation <- gsub("_G5$", "_G05", df_moy_tstv_ancestral$Family_generation)
+df_moy_tstv_ancestral <- df_moy_tstv_ancestral[order(df_moy_tstv_ancestral$Family_generation), ]
 write.csv2(df_moy_tstv_ancestral, "./mean_subst_type_ancestral.csv")
 
-
-ggplot(data = df_moy_tstv_ancestral, aes(x = Family_generation, y = Number)) +
+x_labels<-  sub(".*_", "",df_moy_tstv_ancestral$Family_generation)
+rects <- data.frame(
+  xmin = c(0.5, 4.5, 9.5),  
+  xmax = c(4.5, 9.5, 16.5),
+  ymin = -Inf,
+  ymax = Inf,
+  Group = c("GT3", "GT5", "GT9")
+)
+labels_rects <- data.frame(
+  x = c(2.5, 7, 13),                   
+  label = c("FA", "C", "NFA") 
+)
+minmax_labels_ancestral <- df_moy_tstv_ancestral %>%
+  group_by(Family_generation) %>%
+  summarize(
+    x = unique(Family_generation),
+    y = sum(Number) + 10,                    
+    label = paste0(round(sum(Number[TSTV=="Transition"])), ":", round(sum(Number[TSTV=="Transversion"])))
+  )
+minmax_labels_denovo <- df_moy_tstv_denovo %>%
+  group_by(Family_generation) %>%
+  summarize(
+    x = unique(Family_generation),
+    y = sum(Number) + 2,                    
+    label = paste0(round(sum(Number[TSTV=="Transition"])), ":", round(sum(Number[TSTV=="Transversion"])))
+  )
+p_moy_tstv_ancestral<-ggplot(data = df_moy_tstv_ancestral, aes(x = Family_generation, y = Number)) +
+  geom_rect(data = rects, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Group),
+            inherit.aes = FALSE, alpha = 0.1) +
+  scale_fill_manual(values = c("GT3" = "#688ec8",  
+                               "GT5" = "#deb180",  
+                               "GT9" = "#8eba6b"))+
+  scale_x_discrete(labels = x_labels)+
+  new_scale_fill() +
   geom_col(aes(fill = Substitution, group=TSTV), width = 0.7)+
-  scale_fill_manual(values=df_moy_tstv_ancestral$Color) + theme_classic()
+  labs(x = "", y = "Mean number of ancestral substitutions", title = "") +
+  scale_fill_manual(values=df_moy_tstv_ancestral$Color) + 
+  geom_text(data = labels_rects, aes(x = x, y = 350, label = label), inherit.aes = FALSE, 
+            size = 5, fontface = "bold") +
+  geom_text(
+    data = minmax_labels_ancestral,
+    aes(x = x, y = y, label = label),
+    inherit.aes = FALSE,
+    size = 3.5,
+    fontface = "bold")+
+  theme_classic()+
+  theme(legend.position = "none")
 
-
-ggplot(data = df_moy_tstv_denovo, aes(x = Family_generation, y = Number)) +
+#------------------------------------------------------------------plot ancestral or de novo substitution datas------------------------------------------------------------------------------
+p_moy_tstv_denovo<-ggplot(data = df_moy_tstv_denovo, aes(x = Family_generation, y = Number)) +
+  geom_rect(data = rects, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Group),
+            inherit.aes = FALSE, alpha = 0.1) +
+  scale_fill_manual(values = c("GT3" = "#688ec8",  
+                               "GT5" = "#deb180",  
+                               "GT9" = "#8eba6b"))+
+  scale_x_discrete(labels = x_labels)+
+  labs(x = "", y = "Mean number of de novo substitutions", title = "") +
+  new_scale_fill() +
   geom_col(aes(fill = Substitution, group=TSTV), width = 0.7)+
-  scale_fill_manual(values=df_moy_tstv_denovo$Color) + theme_classic()
+  scale_fill_manual(values=df_moy_tstv_denovo$Color) + 
+  geom_text(data = labels_rects, aes(x = x, y = 55, label = label), inherit.aes = FALSE, 
+            size = 5, fontface = "bold") +
+  geom_text(
+    data = minmax_labels_denovo,
+    aes(x = x, y = y, label = label),
+    inherit.aes = FALSE,
+    size = 3.5,
+    fontface = "bold")+
+  theme_classic()
 
 
 
@@ -531,7 +595,7 @@ for (i in 1:length(list_FGS)){
 agg_df_final <- as.data.frame(agg_df_final)
 agg_df_final$Total_Number <- as.numeric(agg_df_final$Total_Number)
 
-#------------------------------------------------------------------plot datas------------------------------------------------------------------------------
+#------------------------------------------------------------------plot global datas------------------------------------------------------------------------------
 
 
 
@@ -541,4 +605,122 @@ ggplot(data = agg_df_final, aes(x = Family_generation, y = Total_Number)) +
 
 
 
+#-----------------------------------------Compute ts:tv ratio ------------------------------------------------
+
+
+family_generation_names <- mat_moy_tstv_ancestral[,1] %>% sort() %>% unique()
+
+mat_tstv_ratio_ancestral<- matrix(data=NA,nrow = length(family_generation_names), ncol=4)
+colnames(mat_tstv_ratio_ancestral) <- c("Fam_Gen","ts","tv","ratio")
+
+for (i in 1:length(family_generation_names)){
+  lines.tmp<- mat_moy_tstv_ancestral[grep(family_generation_names[i],mat_moy_tstv_ancestral),]
+  ts_number <- sum(as.numeric(lines.tmp[grep("Transition",lines.tmp[,5]),3]))
+  tv_number <- sum(as.numeric(lines.tmp[grep("Transversion",lines.tmp[,5]),3]))
+  ratio<- ts_number/tv_number
+  
+  mat_tstv_ratio_ancestral[i,1] <- lines.tmp[1,1]
+  mat_tstv_ratio_ancestral[i,2] <- ts_number
+  mat_tstv_ratio_ancestral[i,3] <- tv_number
+  mat_tstv_ratio_ancestral[i,4] <- ratio
+}
+
+mat_tstv_ratio_ancestral[,1] <- gsub("_G5$", "_G05", mat_tstv_ratio_ancestral[,1])
+mat_tstv_ratio_ancestral <- mat_tstv_ratio_ancestral[order(mat_tstv_ratio_ancestral[,1]), ]
+mat_tstv_ratio_ancestral <- as.data.frame(mat_tstv_ratio_ancestral) %>%
+  mutate(
+    Group = sub("_.*", "", Fam_Gen),   # garde GT3 / GT5 / GT9
+    Fam_Gen = factor(Fam_Gen, levels = Fam_Gen)   # garde ordre d’origine
+  )
+mat_tstv_ratio_ancestral$ratio <- as.numeric(mat_tstv_ratio_ancestral$ratio)
+
+mat_tstv_ratio_denovo<- matrix(data=NA,nrow = length(family_generation_names), ncol=4)
+colnames(mat_tstv_ratio_denovo) <- c("Fam_Gen","ts","tv","ratio")
+
+for (i in 1:length(family_generation_names)){
+  lines.tmp<- mat_moy_tstv_denovo[grep(family_generation_names[i],mat_moy_tstv_denovo),]
+  ts_number <- sum(as.numeric(lines.tmp[grep("Transition",lines.tmp[,5]),3]))
+  tv_number <- sum(as.numeric(lines.tmp[grep("Transversion",lines.tmp[,5]),3]))
+  ratio<- ts_number/tv_number
+  
+  mat_tstv_ratio_denovo[i,1] <- lines.tmp[1,1]
+  mat_tstv_ratio_denovo[i,2] <- ts_number
+  mat_tstv_ratio_denovo[i,3] <- tv_number
+  mat_tstv_ratio_denovo[i,4] <- ratio
+}
+
+mat_tstv_ratio_denovo[,1] <- gsub("_G5$", "_G05", mat_tstv_ratio_denovo[,1])
+mat_tstv_ratio_denovo <- mat_tstv_ratio_denovo[order(mat_tstv_ratio_denovo[,1]), ]
+mat_tstv_ratio_denovo <- as.data.frame(mat_tstv_ratio_denovo) %>%
+  mutate(
+    Group = sub("_.*", "", Fam_Gen),   # garde GT3 / GT5 / GT9
+    Fam_Gen = factor(Fam_Gen, levels = Fam_Gen)   # garde ordre d’origine
+  )
+mat_tstv_ratio_denovo$ratio <- as.numeric(mat_tstv_ratio_denovo$ratio)
+
+
+x_labels<-  sub(".*_", "",mat_tstv_ratio_ancestral$Fam_Gen)
+
+#------------------------------------------------------------------plot ts:tv ratio------------------------------------------------------------------------------
+
+
+p_tstv_ancestral<- ggplot(mat_tstv_ratio_ancestral, aes(x = Fam_Gen, y = ratio, group=Group, color=Group))+
+  geom_hline(yintercept = 0.5, color = "black", linetype = "solid", linewidth = 1) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 2) + 
+  geom_rect(data = rects, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Group),
+            inherit.aes = FALSE, alpha = 0.1) +
+  scale_fill_manual(values = c("GT3" = "#688ec8",  
+                                "GT5" = "#deb180",  
+                                "GT9" = "#8eba6b"))+
+  scale_color_manual(values = c("GT3" = "#8faad9",  
+                                "GT5" = "#fbd09c",  
+                                "GT9" = "#abd18f")) + 
+  scale_y_continuous(limits = c(0, 1.4), breaks = seq(0, 1.5, by = 0.2))+
+  scale_x_discrete(labels = x_labels)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "", y = "ts:tv ratio", title = "") +
+  theme_classic(base_size = 14) +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.line.x = element_blank(),
+    panel.grid.major.y = element_line(color = "grey", linetype = "solid"),  # lignes horizontales
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "none")
+
+
+p_tstv_denovo<- ggplot(mat_tstv_ratio_denovo, aes(x = Fam_Gen, y = ratio, group=Group, color=Group))+
+  geom_hline(yintercept = 0.5, color = "black", linetype = "solid", linewidth = 1) +
+  geom_point(size = 3) +
+  geom_line(linewidth = 2) + 
+  geom_rect(data = rects, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Group),
+            inherit.aes = FALSE, alpha = 0.1) +
+  scale_fill_manual(values = c("GT3" = "#688ec8",  
+                               "GT5" = "#deb180",  
+                               "GT9" = "#8eba6b"))+
+  scale_color_manual(values = c("GT3" = "#8faad9",  
+                                "GT5" = "#fbd09c",  
+                                "GT9" = "#abd18f")) + 
+  scale_y_continuous(limits = c(0, 2.4), breaks = seq(0, 2.4, by = 0.2))+
+  scale_x_discrete(labels = x_labels)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "", y = "ts:tv ratio", title = "") +
+  theme_classic(base_size = 14) +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.line.x = element_blank(),
+    panel.grid.major.y = element_line(color = "grey", linetype = "solid"),  # lignes horizontales
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank())
+
+
+
+#------------------------------------------------------------------plot final figure ------------------------------------------------------------------------------
+
+figure_global <- (p_moy_tstv_ancestral / p_tstv_ancestral) | (p_moy_tstv_denovo / p_tstv_denovo) 
+figure_global
 
