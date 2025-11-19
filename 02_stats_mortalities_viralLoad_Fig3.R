@@ -66,16 +66,13 @@ kruskal.test(Morta ~ Fam, data = mat_mortalities)
 
 
 
-# Construire le modèle linéaire
+# Construct linear model
 model  <- lm(Morta ~ Gen, data = mat_mortalities)
-# Créer un QQ plot des résidus
+# QQ plot of residus
 ggqqplot(residuals(model))
 
-# Calculer le test de normalité de Shapiro-Wilk
+# Normality test of Shapiro-Wilk
 shapiro_test(residuals(model))
-
-
-mat_mortalities %>% group_by(Gen) %>% shapiro_test(Morta)
 
 
 summary_stats_morta_gen<- mat_mortalities %>% group_by(Gen) %>% get_summary_stats(Morta, type="mean_sd")
@@ -90,55 +87,10 @@ bxp
 
 
 
-
-res.aov <- mat_mortalities_ordered  %>% anova_test(Morta ~ Gen)
-res.aov
-res.aov <- mat_mortalities %>% anova_test(Morta ~ Fam)
-res.aov
-
-###significance test familly
-GT3_GT5 <- mat_mortalities[mat_mortalities$Fam == "GT3"|mat_mortalities$Fam == "GT5_2",]
-GT3_GT5 <- GT3_GT5[GT3_GT5[,4]!=0,]
-t.test(Morta ~ Fam, data = GT3_GT5)
-wilcox.test(Morta ~ Fam, data = GT3_GT5)
-
-
-GT3_GT9 <- mat_mortalities[mat_mortalities$Fam == "GT3"|mat_mortalities$Fam == "GT9",]
-GT3_GT9 <- GT3_GT9[GT3_GT9[,4]!=0,]
-t.test(Morta ~ Fam, data = GT3_GT9)
-wilcox.test(Morta ~ Fam, data = GT3_GT9)
-
-GT5_GT9 <- mat_mortalities[mat_mortalities$Fam == "GT5_2"|mat_mortalities$Fam == "GT9",]
-GT5_GT9 <- GT5_GT9[GT5_GT9[,4]!=0,]
-t.test(Morta ~ Fam, data = GT5_GT9)
-wilcox.test(Morta ~ Fam, data = GT5_GT9)
-
-###significance test generation
-
-
-results <- list()
-
-# Nom des variables numériques pour lesquelles on veut faire le test
-variables_to_test <- mat_mortalities$Fam_Gen %>% 
-  
-  colnames(mat_mortalities)[sapply(mat_mortalities, is.numeric) & colnames(mat_mortalities) != "Morta"]
-
-for (var in variables_to_test) {
-  
-  # Sous-ensemble des données avec les familles GT3 et GT5_2
-  GT3_GT5 <- mat_mortalities[mat_mortalities$Fam %in% c("GT3", "GT5_2"), c("Fam", var)]
-  
-  # Suppression des lignes avec valeur 0 ou NA dans la variable considérée
-  GT3_GT5 <- GT3_GT5[GT3_GT5[[var]] != 0 & !is.na(GT3_GT5[[var]]), ]
-  
-  # Vérification qu'on a bien au moins deux familles présentes avec au moins une valeur
-  if (length(unique(GT3_GT5$Fam)) == 2 && nrow(GT3_GT5) >= 3) {
-    test_result <- t.test(as.formula(paste(var, "~ Fam")), data = GT3_GT5)
-    results[[var]] <- list(p.value = test_result$p.value, statistic = test_result$statistic)
-  } else {
-    results[[var]] <- "Insufficient data"
-  }
-}
+res.aov1 <- mat_mortalities %>% anova_test(Morta ~ Fam)
+res.aov1
+res.aov2 <- mat_mortalities  %>% anova_test(Morta ~ Gen)
+res.aov2
 
 
 
@@ -163,21 +115,21 @@ p <- ggplot(viralLoad_family, aes(x=V2, y=V3, fill=Family)) + scale_y_continuous
             mapping = aes(x = Generation, y = Load, group=1),color="#FF9933", linewidth=2)+
   geom_line(data = meanViralLoad[meanViralLoad$Family == "GT9",], 
             mapping = aes(x = Generation, y = Load, group=1),color="#99CC00", linewidth=2) + 
-  ggtitle("Charge virale dans les échantillons au cours \n des générations d'infections") +
-  xlab("Charge virale (Nombre de copies/ng ADN)") + ylab("Générations") + theme_classic()
+  ggtitle("") +
+  xlab("Infection generation") + ylab("log10(Viral copy number/ng of DNA") + theme_classic()
 
 
 p
 
 #------------------------------------------------------------------test for significance----------------------------------------------------------------------
 
-# Construire le modèle linéaire
+# Construct linear model
 model1 <- lm(V3 ~ V2, data = viralLoad_family)
 model2  <- lm(V3 ~ Family, data = viralLoad_family)
-# Créer un QQ plot des résidus
+# QQ plot of residus
 ggqqplot(residuals(model1))
 ggqqplot(residuals(model2))
-# Calculer le test de normalité de Shapiro-Wilk
+# Normality test of Shapiro-Wilk
 shapiro_test(residuals(model1))
 shapiro_test(residuals(model2))
 
@@ -189,249 +141,23 @@ summary_stats_loadVir_gen<- viralLoad_family %>% group_by(V2) %>% get_summary_st
 summary_stats_loadVir_fam<- viralLoad_family %>% group_by(Family) %>% get_summary_stats(V3, type="mean_sd")
 summary_stats_loadVir_fam_Gen<- viralLoad_family %>% group_by(Family,V2) %>% get_summary_stats(V3, type="mean_sd")
 
-res.aov1 <- viralLoad_family  %>% anova_test(V3 ~ V2)
-res.aov1
-res.aov2 <- viralLoad_family %>% anova_test(V3 ~ Family)
-res.aov2
-
-###significance test GT3
-GT3_G0_G5 <- viralLoad_family[viralLoad_family$param == "GT3_G0"|viralLoad_family$param == "GT3_G5",]
-t.test(V3 ~ param, data = GT3_G0_G5)
-wilcox.test(V3 ~ param, data = GT3_G0_G5)
-
-GT3_G5_G10 <- viralLoad_family[viralLoad_family$param == "GT3_G5"|viralLoad_family$param == "GT3_G10",]
-t.test(V3 ~ param, data = GT3_G5_G10)
-wilcox.test(V3 ~ param, data = GT3_G5_G10)
-
-GT3_G10_G13 <- viralLoad_family[viralLoad_family$param == "GT3_G10"|viralLoad_family$param == "GT3_G13",]
-t.test(V3 ~ param, data = GT3_G10_G13)
-wilcox.test(V3 ~ param, data = GT3_G10_G13)
-
-#G0-10
-GT3_G0_G10 <- viralLoad_family[viralLoad_family$param == "GT3_G0"|viralLoad_family$param == "GT3_G10",]
-t.test(V3 ~ param, data = GT3_G0_G10)
-wilcox.test(V3 ~ param, data = GT3_G0_G10)
-
-#G0-13
-GT3_G0_G13 <- viralLoad_family[viralLoad_family$param == "GT3_G0"|viralLoad_family$param == "GT3_G13",]
-t.test(V3 ~ param, data = GT3_G0_G13)
-wilcox.test(V3 ~ param, data = GT3_G0_G13)
-
-#G5-13
-GT3_G5_G13 <- viralLoad_family[viralLoad_family$param == "GT3_G5"|viralLoad_family$param == "GT3_G13",]
-t.test(V3 ~ param, data = GT3_G5_G13)
-wilcox.test(V3 ~ param, data = GT3_G5_G13)
-
-###significance test GT5
-
-GT5_G0_G5 <- viralLoad_family[viralLoad_family$param == "GT5_G0"|viralLoad_family$param == "GT5_G5",]
-t.test(V3 ~ param, data = GT5_G0_G5)
-wilcox.test(V3 ~ param, data = GT5_G0_G5)
-
-GT5_G5_G10 <- viralLoad_family[viralLoad_family$param == "GT5_G5"|viralLoad_family$param == "GT5_G10",]
-t.test(V3 ~ param, data = GT5_G5_G10)
-wilcox.test(V3 ~ param, data = GT5_G5_G10)
-
-GT5_G10_G15 <- viralLoad_family[viralLoad_family$param == "GT5_G10"|viralLoad_family$param == "GT5_G15",]
-t.test(V3 ~ param, data = GT5_G10_G15)
-wilcox.test(V3 ~ param, data = GT5_G10_G15)
-
-GT5_G15_G18 <- viralLoad_family[viralLoad_family$param == "GT5_G15"|viralLoad_family$param == "GT5_G18",]
-t.test(V3 ~ param, data = GT5_G15_G18)
-wilcox.test(V3 ~ param, data = GT5_G15_G18)
-
-#G0-10
-GT5_G0_G10 <- viralLoad_family[viralLoad_family$param == "GT5_G0"|viralLoad_family$param == "GT5_G10",]
-t.test(V3 ~ param, data = GT5_G0_G10)
-wilcox.test(V3 ~ param, data = GT5_G0_G10)
-
-#G0-15
-GT5_G0_G15 <- viralLoad_family[viralLoad_family$param == "GT5_G0"|viralLoad_family$param == "GT5_G15",]
-t.test(V3 ~ param, data = GT5_G0_G15)
-wilcox.test(V3 ~ param, data = GT5_G0_G15)
-
-#G0-18
-GT5_G0_G18 <- viralLoad_family[viralLoad_family$param == "GT5_G0"|viralLoad_family$param == "GT5_G18",]
-t.test(V3 ~ param, data = GT5_G0_G18)
-wilcox.test(V3 ~ param, data = GT5_G0_G18)
+res.aov3 <- viralLoad_family %>% anova_test(V3 ~ Family)
+res.aov3
+res.aov4 <- viralLoad_family  %>% anova_test(V3 ~ V2)
+res.aov4
 
 
-#G5-15
-GT5_G5_G15 <- viralLoad_family[viralLoad_family$param == "GT5_G5"|viralLoad_family$param == "GT5_G15",]
-t.test(V3 ~ param, data = GT5_G5_G15)
-wilcox.test(V3 ~ param, data = GT5_G5_G15)
-
-#G5-18
-GT5_G5_G18 <- viralLoad_family[viralLoad_family$param == "GT5_G5"|viralLoad_family$param == "GT5_G18",]
-t.test(V3 ~ param, data = GT5_G5_G18)
-wilcox.test(V3 ~ param, data = GT5_G5_G18)
-
-#G10-18
-GT5_G10_G18 <- viralLoad_family[viralLoad_family$param == "GT5_G10"|viralLoad_family$param == "GT5_G18",]
-t.test(V3 ~ param, data = GT5_G10_G18)
-wilcox.test(V3 ~ param, data = GT5_G10_G18)
-
-###significance test GT9
-
-GT9_G0_G5 <- viralLoad_family[viralLoad_family$param == "GT9_G0"|viralLoad_family$param == "GT9_G5",]
-t.test(V3 ~ param, data = GT9_G0_G5)
-wilcox.test(V3 ~ param, data = GT9_G0_G5)
-
-GT9_G5_G10 <- viralLoad_family[viralLoad_family$param == "GT9_G5"|viralLoad_family$param == "GT9_G10",]
-t.test(V3 ~ param, data = GT9_G5_G10)
-wilcox.test(V3 ~ param, data = GT9_G5_G10)
-
-GT9_G10_G15 <- viralLoad_family[viralLoad_family$param == "GT9_G10"|viralLoad_family$param == "GT9_G15",]
-t.test(V3 ~ param, data = GT9_G10_G15)
-wilcox.test(V3 ~ param, data = GT9_G10_G15)
-
-GT9_G15_G20 <- viralLoad_family[viralLoad_family$param == "GT9_G15"|viralLoad_family$param == "GT9_G20",]
-t.test(V3 ~ param, data = GT9_G15_G20)
-wilcox.test(V3 ~ param, data = GT9_G15_G20)
-
-GT9_G20_G24 <- viralLoad_family[viralLoad_family$param == "GT9_G20"|viralLoad_family$param == "GT9_G24",]
-t.test(V3 ~ param, data = GT9_G20_G24)
-wilcox.test(V3 ~ param, data = GT9_G20_G24)
-
-GT9_G24_G28 <- viralLoad_family[viralLoad_family$param == "GT9_G24"|viralLoad_family$param == "GT9_G28",]
-t.test(V3 ~ param, data = GT9_G24_G28)
-wilcox.test(V3 ~ param, data = GT9_G24_G28)
 
 
-#G0-10
-GT9_G0_G10 <- viralLoad_family[viralLoad_family$param == "GT9_G0"|viralLoad_family$param == "GT9_G10",]
-t.test(V3 ~ param, data = GT9_G0_G10)
-wilcox.test(V3 ~ param, data = GT9_G0_G10)
+anova_mat<- rbind(res.aov1, res.aov2, res.aov3, res.aov4)
+anova_mat[1,1] <- "Mortalities ~ oyster populations"
+anova_mat[2,1] <- "Mortalities ~ infection generations"
+anova_mat[3,1] <- "Viral DNA copy number ~ oyster populations"
+anova_mat[4,1] <- "Viral DNA copy number ~ infection generations"
 
-#G0-15
-GT9_G0_G15 <- viralLoad_family[viralLoad_family$param == "GT9_G0"|viralLoad_family$param == "GT9_G15",]
-t.test(V3 ~ param, data = GT9_G0_G15)
-wilcox.test(V3 ~ param, data = GT9_G0_G15)
-
-#G0-20
-GT9_G0_G20 <- viralLoad_family[viralLoad_family$param == "GT9_G0"|viralLoad_family$param == "GT9_G20",]
-t.test(V3 ~ param, data = GT9_G0_G20)
-wilcox.test(V3 ~ param, data = GT9_G0_G20)
-
-#G0-24
-GT9_G0_G24 <- viralLoad_family[viralLoad_family$param == "GT9_G0"|viralLoad_family$param == "GT9_G24",]
-t.test(V3 ~ param, data = GT9_G0_G24)
-wilcox.test(V3 ~ param, data = GT9_G0_G24)
-
-#G0-28
-GT9_G0_G28 <- viralLoad_family[viralLoad_family$param == "GT9_G0"|viralLoad_family$param == "GT9_G28",]
-t.test(V3 ~ param, data = GT9_G0_G28)
-wilcox.test(V3 ~ param, data = GT9_G0_G28)
-
-#G5-15
-GT9_G5_G15 <- viralLoad_family[viralLoad_family$param == "GT9_G5"|viralLoad_family$param == "GT9_G15",]
-t.test(V3 ~ param, data = GT9_G5_G15)
-wilcox.test(V3 ~ param, data = GT9_G5_G15)
-
-#G5-20
-GT9_G5_G20 <- viralLoad_family[viralLoad_family$param == "GT9_G5"|viralLoad_family$param == "GT9_G20",]
-t.test(V3 ~ param, data = GT9_G5_G20)
-wilcox.test(V3 ~ param, data = GT9_G5_G20)
-
-#G5-24
-GT9_G5_G24 <- viralLoad_family[viralLoad_family$param == "GT9_G5"|viralLoad_family$param == "GT9_G24",]
-t.test(V3 ~ param, data = GT9_G5_G24)
-wilcox.test(V3 ~ param, data = GT9_G5_G24)
-
-#G5-28
-GT9_G5_G28 <- viralLoad_family[viralLoad_family$param == "GT9_G5"|viralLoad_family$param == "GT9_G28",]
-t.test(V3 ~ param, data = GT9_G5_G28)
-wilcox.test(V3 ~ param, data = GT9_G5_G28)
-
-#G10-20
-GT9_G10_G20 <- viralLoad_family[viralLoad_family$param == "GT9_G10"|viralLoad_family$param == "GT9_G20",]
-t.test(V3 ~ param, data = GT9_G10_G20)
-wilcox.test(V3 ~ param, data = GT9_G10_G20)
-
-#G10-24
-GT9_G10_G24 <- viralLoad_family[viralLoad_family$param == "GT9_G10"|viralLoad_family$param == "GT9_G24",]
-t.test(V3 ~ param, data = GT9_G10_G24)
-wilcox.test(V3 ~ param, data = GT9_G10_G24)
-
-#G10-28
-GT9_G10_G28 <- viralLoad_family[viralLoad_family$param == "GT9_G10"|viralLoad_family$param == "GT9_G28",]
-t.test(V3 ~ param, data = GT9_G10_G28)
-wilcox.test(V3 ~ param, data = GT9_G10_G28)
-
-#G15-24
-GT9_G15_G24 <- viralLoad_family[viralLoad_family$param == "GT9_G15"|viralLoad_family$param == "GT9_G24",]
-t.test(V3 ~ param, data = GT9_G15_G24)
-wilcox.test(V3 ~ param, data = GT9_G15_G24)
-
-#G15-28
-GT9_G15_G28 <- viralLoad_family[viralLoad_family$param == "GT9_G15"|viralLoad_family$param == "GT9_G28",]
-t.test(V3 ~ param, data = GT9_G15_G28)
-wilcox.test(V3 ~ param, data = GT9_G15_G28)
-
-#G20-28
-GT9_G20_G28 <- viralLoad_family[viralLoad_family$param == "GT9_G20"|viralLoad_family$param == "GT9_G28",]
-t.test(V3 ~ param, data = GT9_G20_G28)
-wilcox.test(V3 ~ param, data = GT9_G20_G28)
-
-###significance test G0
-GT3_GT5_G0 <- viralLoad_family[viralLoad_family$param == "GT3_G0"|viralLoad_family$param == "GT5_G0",]
-t.test(V3 ~ param, data = GT3_GT5_G0)
-wilcox.test(V3 ~ param, data = GT3_GT5_G0)
-
-GT5_GT9_G0 <- viralLoad_family[viralLoad_family$param == "GT5_G0"|viralLoad_family$param == "GT9_G0",]
-t.test(V3 ~ param, data = GT5_GT9_G0)
-wilcox.test(V3 ~ param, data = GT5_GT9_G0)
-
-GT3_GT9_G0 <- viralLoad_family[viralLoad_family$param == "GT3_G0"|viralLoad_family$param == "GT9_G0",]
-t.test(V3 ~ param, data = GT3_GT9_G0)
-wilcox.test(V3 ~ param, data = GT3_GT9_G0)
+anova_mat
 
 
-###significance test G5
-GT3_GT5_G5 <- viralLoad_family[viralLoad_family$param == "GT3_G5"|viralLoad_family$param == "GT5_G5",]
-t.test(V3 ~ param, data = GT3_GT5_G5)
-wilcox.test(V3 ~ param, data = GT3_GT5_G5)
-
-GT5_GT9_G5 <- viralLoad_family[viralLoad_family$param == "GT5_G5"|viralLoad_family$param == "GT9_G5",]
-t.test(V3 ~ param, data = GT5_GT9_G5)
-wilcox.test(V3 ~ param, data = GT5_GT9_G5)
-
-GT3_GT9_G5 <- viralLoad_family[viralLoad_family$param == "GT3_G5"|viralLoad_family$param == "GT9_G5",]
-t.test(V3 ~ param, data = GT3_GT9_G5)
-wilcox.test(V3 ~ param, data = GT3_GT9_G5)
-
-
-###significance test G10
-GT3_GT5_G10 <- viralLoad_family[viralLoad_family$param == "GT3_G10"|viralLoad_family$param == "GT5_G10",]
-t.test(V3 ~ param, data = GT3_GT5_G10)
-wilcox.test(V3 ~ param, data = GT3_GT5_G10)
-
-GT5_GT9_G10 <- viralLoad_family[viralLoad_family$param == "GT5_G10"|viralLoad_family$param == "GT9_G10",]
-t.test(V3 ~ param, data = GT5_GT9_G10)
-wilcox.test(V3 ~ param, data = GT5_GT9_G10)
-
-GT3_GT9_G10 <- viralLoad_family[viralLoad_family$param == "GT3_G10"|viralLoad_family$param == "GT9_G10",]
-t.test(V3 ~ param, data = GT3_GT9_G10)
-wilcox.test(V3 ~ param, data = GT3_GT9_G10)
-
-
-###significance test G15
-GT3_GT5_G15 <- viralLoad_family[viralLoad_family$param == "GT3_G13"|viralLoad_family$param == "GT5_G15",]
-t.test(V3 ~ param, data = GT3_GT5_G15)
-wilcox.test(V3 ~ param, data = GT3_GT5_G15)
-
-GT5_GT9_G15 <- viralLoad_family[viralLoad_family$param == "GT5_G15"|viralLoad_family$param == "GT9_G15",]
-t.test(V3 ~ param, data = GT5_GT9_G15)
-wilcox.test(V3 ~ param, data = GT5_GT9_G15)
-
-GT3_GT9_G15 <- viralLoad_family[viralLoad_family$param == "GT3_G13"|viralLoad_family$param == "GT9_G15",]
-t.test(V3 ~ param, data = GT3_GT9_G15)
-wilcox.test(V3 ~ param, data = GT3_GT9_G15)
-
-###significance test G20
-GT5_GT9_G20 <- viralLoad_family[viralLoad_family$param == "GT5_G18"|viralLoad_family$param == "GT9_G20",]
-t.test(V3 ~ param, data = GT5_GT9_G20)
-wilcox.test(V3 ~ param, data = GT5_GT9_G20)
 
 
 
