@@ -26,6 +26,8 @@ These packages can be installed by running the command `install.packages(package
 8. dplyr (version 1.1.4): Data manipulation, providing tools to efficiently filter, transform, summarize, and organize data
 9. knitr (version 1.50): Enables dynamic report generation by integrating R code, results, and narrative text into documents
 10. stats (base R, version 4.5.1): Provides fundamental statistical functions, including probability distributions, hypothesis testing, linear and nonlinear modeling 
+11. ggnewscale (version 0.5.2): Use multiple fill and colour scales in 'ggplot2'.
+12. patchwork (version 1.3.2):  Allow for arbitrarily complex composition of plots
 
 
 → <ins>Not available</ins> on CRAN for current version of R 
