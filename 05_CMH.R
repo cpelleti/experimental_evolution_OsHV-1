@@ -369,7 +369,7 @@ write.csv2(signif_CMH_GT9, "./significant_pvalues_CMH_GT9.csv")
 
 #-------------5- plot adjusted pvalues colored according to ORF functions
 orf_func <- read.csv2("./significant_pvalues_CMH_GT9_orf_function.csv")
-signif_CMH_GT9 <- read.csv2( "./significante_pvalues_CMH_GT9.csv")
+signif_CMH_GT9 <- read.csv2( "./significant_pvalues_CMH_GT9.csv")
 OsHV_uVarA_scheme <- data.table::fread(glue::glue("./OsHV1_annotations2.csv") ) %>%
   dplyr::mutate(direction = if_else(strand == "forward",1,-1 )) 
 OsHV_uVarA_scheme <- OsHV_uVarA_scheme[OsHV_uVarA_scheme$molecule == "OsHV genome",]

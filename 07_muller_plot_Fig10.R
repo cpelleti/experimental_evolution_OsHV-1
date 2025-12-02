@@ -24,7 +24,7 @@ addline_format <- function(x,...){
 
 #------------------------------------------------------------------import datas-------------------------------------------------------------------------------
 
-ancestral_vcf<- read.csv2("./global_suspension_individuals_final.csv")
+ancestral_vcf<- read.csv2("./global_suspension_individuals.csv")
 evol_expe_vcf<- read.csv2("./data_frame_allelic_frequencies_indiduals.csv")
 attri <- read.csv2("./attributes_muller_plot.csv") ### table to define colors for plotting according to origin of the snps
 
