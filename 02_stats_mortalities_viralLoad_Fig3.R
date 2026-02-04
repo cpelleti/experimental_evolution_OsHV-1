@@ -16,8 +16,9 @@ ipak <- function(pkg){
 }
 
 ipak(unique(
-  c( "ggplot2", "tidyr","ggpubr","tidyverse","rstatix") # plot
+  c( "ggplot2", "tidyr","ggpubr","tidyverse","rstatix","dplyr") 
 ) )
+
 
 addline_format <- function(x,...){
   gsub('//s','/n',x)
@@ -27,6 +28,7 @@ addline_format <- function(x,...){
 #------------------------------------------------------------------import mortality datas---------------------------------------------------------------------
 
 mortalities<- read.csv2("./data_mortality.csv", header=T)
+data_morta_replicats <- read.csv2("./pourcentages_mortalites_proxy_replicates.csv", header=T, row.names =1)
 viralLoad<- read.csv2("./load_viral_TR463.csv", header=F)
 meanViralLoad<- read.csv2("./load_viral_moyen_TR463.csv", header=T) 
 
@@ -92,7 +94,116 @@ res.aov1
 res.aov2 <- mat_mortalities  %>% anova_test(Morta ~ Gen)
 res.aov2
 
+#-----------------------------------------------------------plot datas-----------------------------------------------------------------------------------
 
+# convert table to data frame
+mortalities <- as.data.frame(data_morta_replicats)
+
+
+# Time
+G <- as.numeric(gsub("G", "", colnames(mortalities)))
+
+# compute standard deviation
+calc_sd <- function(r1, r2) {
+  apply(rbind(r1, r2), 2, sd, na.rm = TRUE)
+}
+
+
+df <- bind_rows(
+  data.frame(G = G, GT = "GT3",
+             mean = as.numeric(mortalities["GT3", ]),
+             sd   = calc_sd(mortalities["GT3_R1", ], mortalities["GT3_R2", ])),
+  data.frame(G = G, GT = "GT5",
+             mean = as.numeric(mortalities["GT5", ]),
+             sd   = calc_sd(mortalities["GT5_R1", ], mortalities["GT5_R2", ])),
+  data.frame(G = G, GT = "GT9",
+             mean = as.numeric(mortalities["GT9", ]),
+             sd   = calc_sd(mortalities["GT9_R1", ], mortalities["GT9_R2", ]))
+) %>%
+  filter(!is.na(mean)) %>% mutate(sd = ifelse(!is.na(sd) & sd > mean, mean, sd))
+
+
+
+
+bg <- data.frame(
+  xmin = seq(-0.5, max(G), by = 2),
+  xmax = seq(0.5, max(G) + 1, by = 2)
+)
+
+last_points <- df %>%
+  group_by(GT) %>%
+  filter((GT == "GT3" & G == 13) |
+           (GT == "GT5" & G == 18) |
+           (GT == "GT9" & G == 28))
+
+
+
+plotA <- ggplot() +
+  geom_rect(data = bg,
+            aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+            fill = "grey90", alpha = 0.6) +
+  # ± SD
+  geom_ribbon(data = df,
+              aes(x = G, ymin = mean - sd, ymax = mean + sd, fill = GT),
+              alpha = 0.2) +
+  
+  # Courbes de mortalité
+  geom_line(data = df,
+            aes(x = G, y = mean, color = GT, group = GT),
+            linewidth = 1.3) +
+  geom_point(data = df,
+             aes(x = G, y = mean, color = GT),
+             size = 1.5)+
+  
+  # Courbes de tendance
+  geom_smooth(data = df,
+              aes(x = G, y = mean, color = GT, group = GT),
+              method = "lm", se = FALSE, linetype = "dotted", linewidth = 1) +
+  
+  # Étoiles bas
+  geom_point(data = last_points,
+             aes(x = G, y = 2, color = GT), shape = 8,
+             size = 2) +
+  
+  # Étoiles haut
+  geom_point(data = last_points,
+             aes(x = G, y = 98, color = GT), shape = 8,
+             size = 2) +
+  
+  # Scales
+    scale_y_continuous(limits = c(0, 105), expand = c(0, 0)) +
+  scale_x_continuous(
+    breaks = seq(0, max(df$G)),     
+    labels = paste0("P", seq(0, max(df$G))), 
+    expand = c(0,0)
+  )+
+  scale_color_manual(
+    values = c("GT3" = "#86a1da", "GT5" = "#f8c284", "GT9" = "#98d881", 
+               name="Last sequenced samples")
+  ) +
+  scale_fill_manual(
+    values = c("GT3" = "#86a1da", "GT5" = "#f8c284", "GT9" = "#98d881"),
+    name = "SD"
+  ) +
+  scale_shape_manual(
+    values = c("GT3" = 8, "GT5" = 8, "GT9" = 8),
+    name = "Last sequenced samples"
+  ) +
+  
+  labs(
+    x = "Infection passage",
+    y = "Mortality (%)",
+    color = "Mortalities",
+    fill  = "Mortalities"
+  ) +
+  
+  theme_classic(base_size = 14) +
+  theme(
+    legend.position = "right",
+    axis.text.x = element_text(angle = 0, vjust = 0.5)
+  )
+
+plotA
 
 ###################################### VIRAL LOAD ###############################################
 
@@ -105,7 +216,7 @@ viralLoad_family <- viralLoad %>%
 
 #------------------------------------------------------------------plot datas--------------------------------------------------------------------------
 
-p <- ggplot(viralLoad_family, aes(x=V2, y=V3, fill=Family)) + scale_y_continuous(trans='log10') +
+plotB <- ggplot(viralLoad_family, aes(x=V2, y=V3, fill=Family)) + scale_y_continuous(trans='log10') +
   geom_boxplot(position=position_dodge(1))+  scale_x_discrete(limits=c("G0", "G5", "G10","G13","G15","G18","G20","G24","G28")) +
   geom_dotplot(binaxis='y', stackdir='center', dotsize=0.5,
                position=position_dodge(1)) +scale_fill_manual(values=c("#0033FF", "#FF9933", "#99CC00"))+
@@ -119,7 +230,7 @@ p <- ggplot(viralLoad_family, aes(x=V2, y=V3, fill=Family)) + scale_y_continuous
   xlab("Infection generation") + ylab("log10(Viral copy number/ng of DNA") + theme_classic()
 
 
-p
+plotB
 
 #------------------------------------------------------------------test for significance----------------------------------------------------------------------
 
@@ -156,8 +267,10 @@ anova_mat[3,1] <- "Viral DNA copy number ~ oyster populations"
 anova_mat[4,1] <- "Viral DNA copy number ~ infection generations"
 
 anova_mat
+#---------------------------------------------------------------plot global--------------------------------------------------------------
 
-
+figure_global <- plotA | plotB
+figure_global
 
 
 
