@@ -205,6 +205,40 @@ plotA <- ggplot() +
 
 plotA
 
+
+#----------------------------------analysis of global co-variance of mortality rates --------------------------------
+# Remove the first three rows (GT9, GT5, GT3) to keep only replicates
+replicates_only <- mortalities[-c(1:3), ]
+
+# Sort the rows alphabetically by row names
+replicates_only <- replicates_only[order(rownames(replicates_only)),]
+
+# Rename the rows with new labels for clarity
+rownames(replicates_only) <- c("FA_R1", "FA_R2", "C_R1", "C_R2", "NFA_R1", "NFA_R2")
+
+# Transpose the table so that columns represent replicates
+mortality_t <- t(replicates_only)
+
+# Calculate the global correlation matrix between replicates, ignoring NA values
+cor_global <- cor(mortality_t, use = "pairwise.complete.obs")
+print("Global correlation matrix:")
+print(cor_global)
+
+# Visualize the global correlation matrix using corrplot
+# - method = "color" for a colored heatmap
+# - addCoef.col = "black" to display correlation values on the plot
+# - number.cex controls the size of the displayed coefficients
+# - tl.col and tl.srt set label color and rotation
+# - col defines a custom gradient from coral → yellow → green
+# - title and mar set the plot title and margins
+
+plotSA <- corrplot(cor_global, method = "color", addCoef.col = "black", number.cex = 0.6,
+         tl.col = "black", tl.srt = 45, 
+         col = colorRampPalette(c("snow4", "lightgoldenrodyellow", "plum4"))(200), 
+         title = "", mar=c(0,0,2,0))
+
+
+
 ###################################### VIRAL LOAD ###############################################
 
 #------------------------------------------------------------------prepare datas--------------------------------------------------------------------------
