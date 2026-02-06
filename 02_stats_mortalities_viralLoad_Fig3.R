@@ -205,6 +205,110 @@ plotA <- ggplot() +
 
 plotA
 
+#----------------------with tendency curves for each replicates 
+# Data frame long
+df <- bind_rows(
+  data.frame(G = G, GT = "GT3_R1",
+             mean = as.numeric(mortalities["GT3_R1", ]),
+             sd   = calc_sd(mortalities["GT3_R1", ], mortalities["GT3_R2", ])),
+  data.frame(G = G, GT = "GT3_R2",
+             mean = as.numeric(mortalities["GT3_R2", ]),
+             sd   = calc_sd(mortalities["GT3_R1", ], mortalities["GT3_R2", ])),
+  data.frame(G = G, GT = "GT5_R1",
+             mean = as.numeric(mortalities["GT5_R1", ]),
+             sd   = calc_sd(mortalities["GT5_R1", ], mortalities["GT5_R2", ])),
+  data.frame(G = G, GT = "GT5_R2",
+             mean = as.numeric(mortalities["GT5_R2", ]),
+             sd   = calc_sd(mortalities["GT5_R1", ], mortalities["GT5_R2", ])),
+  data.frame(G = G, GT = "GT9_R1",
+             mean = as.numeric(mortalities["GT9_R1", ]),
+             sd   = calc_sd(mortalities["GT9_R1", ], mortalities["GT9_R2", ])),
+  data.frame(G = G, GT = "GT9_R2",
+             mean = as.numeric(mortalities["GT9_R2", ]),
+             sd   = calc_sd(mortalities["GT9_R1", ], mortalities["GT9_R2", ]))
+) %>%
+  filter(!is.na(mean)) %>% mutate(sd = ifelse(!is.na(sd) & sd > mean, mean, sd))
+
+
+  
+plotSA1 <- ggplot() +
+  geom_rect(data = bg,
+            aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+            fill = "grey90", alpha = 0.6) +
+  
+  # Courbes de mortalité
+  geom_line(data = df,
+            aes(x = G, y = mean, color = GT, group = GT),
+            linewidth = 1.3) +
+  geom_point(data = df,
+             aes(x = G, y = mean, color = GT),
+             size = 1.5) +
+    # Courbes de tendance
+  geom_smooth(data = df,
+              aes(x = G, y = mean, color = GT, group = GT),
+              method = "lm", se = FALSE, linetype = "dotted", linewidth = 1) +
+  
+  # Équations + R²
+  stat_poly_eq(
+    data = df,
+    aes(x = G, y = mean, color = GT,
+        label = paste0(
+          "atop(",
+          after_stat(eq.label), ", ",
+          after_stat(rr.label),
+          ")")),
+    formula = y ~ x,
+    parse = TRUE,
+    size = 3,
+    label.x = "right",
+    label.y =  "top",
+  )+
+  
+  # Étoiles bas
+  geom_point(data = last_points,
+             aes(x = G, y = 2, color = GT), shape = 8,
+             size = 2) +
+  
+  # Étoiles haut
+  geom_point(data = last_points,
+             aes(x = G, y = 98, color = GT), shape = 8,
+             size = 2) +
+  
+  # Scales
+  scale_y_continuous(limits = c(0, 105), expand = c(0, 0)) +
+  scale_x_continuous(
+    breaks = seq(0, max(df$G)),     
+    labels = paste0("P", seq(0, max(df$G))), 
+    expand = c(0,0)
+  )+
+  scale_color_manual(
+    values = c("GT3_R1" = "steelblue1", "GT3_R2" = "deepskyblue4", "GT5_R1" = "lightsalmon","GT5_R2" = "coral",  "GT9_R1" = "darkseagreen2", "GT9_R2" = "darkseagreen4", 
+               name="Last sequenced samples")
+  ) +
+  scale_fill_manual(
+    values = c("GT3_R1" = "steelblue1", "GT3_R2" = "deepskyblue4", "GT5_R1" = "lightsalmon","GT5_R2" = "coral",  "GT9_R1" = "darkseagreen2", "GT9_R2" = "darkseagreen4"),
+    name = "SD"
+  ) +
+  scale_shape_manual(
+    values = c("GT3" = 8, "GT5" = 8, "GT9" = 8),
+    name = "Last sequenced samples"
+  ) +
+  
+  labs(
+    x = "Infection passage",
+    y = "Mortality (%)",
+    color = "Mortalities",
+    fill  = "Mortalities"
+  ) +
+  
+  theme_classic(base_size = 14) +
+  theme(
+    legend.position = "right",
+    axis.text.x = element_text(angle = 0, vjust = 0.5)
+  )
+
+x11()
+plotSA1
 
 #----------------------------------analysis of global co-variance of mortality rates --------------------------------
 # Remove the first three rows (GT9, GT5, GT3) to keep only replicates
@@ -232,7 +336,7 @@ print(cor_global)
 # - col defines a custom gradient from coral → yellow → green
 # - title and mar set the plot title and margins
 
-plotSA <- corrplot(cor_global, method = "color", addCoef.col = "black", number.cex = 0.6,
+plotSA2 <- corrplot(cor_global, method = "color", addCoef.col = "black", number.cex = 0.6,
          tl.col = "black", tl.srt = 45, 
          col = colorRampPalette(c("snow4", "lightgoldenrodyellow", "plum4"))(200), 
          title = "", mar=c(0,0,2,0))
