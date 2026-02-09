@@ -89,10 +89,12 @@ bxp
 
 
 
-res.aov1 <- mat_mortalities %>% anova_test(Morta ~ Fam)
+mat_mortalities$Gen <- as.numeric(gsub("G", "", mat_mortalities$Gen))
+mat_mortalities$Fam <- gsub("GT", "", mat_mortalities$Fam) 
+mat_mortalities$Fam <- as.numeric(gsub("_2", "", mat_mortalities$Fam)) 
+
+res.aov1 <- mat_mortalities %>% anova_test(Morta ~ Fam*Gen)
 res.aov1
-res.aov2 <- mat_mortalities  %>% anova_test(Morta ~ Gen)
-res.aov2
 
 #-----------------------------------------------------------plot datas-----------------------------------------------------------------------------------
 
@@ -390,10 +392,8 @@ summary_stats_loadVir_gen<- viralLoad_family %>% group_by(V2) %>% get_summary_st
 summary_stats_loadVir_fam<- viralLoad_family %>% group_by(Family) %>% get_summary_stats(V3, type="mean_sd")
 summary_stats_loadVir_fam_Gen<- viralLoad_family %>% group_by(Family,V2) %>% get_summary_stats(V3, type="mean_sd")
 
-res.aov3 <- viralLoad_family %>% anova_test(V3 ~ Family)
-res.aov3
-res.aov4 <- viralLoad_family  %>% anova_test(V3 ~ V2)
-res.aov4
+res.aov2 <- viralLoad_family %>% anova_test(V3 ~ Family*V2)
+res.aov2
 
 
 
