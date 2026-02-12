@@ -721,6 +721,76 @@ p_tstv_denovo<- ggplot(mat_tstv_ratio_denovo, aes(x = Fam_Gen, y = ratio, group=
 
 #------------------------------------------------------------------plot final figure ------------------------------------------------------------------------------
 
-figure_global <- (p_moy_tstv_ancestral / p_tstv_ancestral) | (p_moy_tstv_denovo / p_tstv_denovo) 
+figure_global <- (p_moy_tstv_ancestral / p_tstv_ancestral) / (p_moy_tstv_denovo / p_tstv_denovo) 
 figure_global
+
+
+#------------------------------------------------------------------compute pi over time for each family (Supplementary figure)------------------------------------------------------------------------------
+
+
+# Pivot all sample columns into two columns: 'Sample' and 'AltFreq'
+# This converts the data from wide format (one column per sample) to long format
+subst_long <- subst_table %>%
+  pivot_longer(cols = starts_with("GT"), 
+               names_to = "Sample", 
+               values_to = "AltFreq")
+
+# Extract Family, Passage, and Individual information from the Sample column
+subst_long <- subst_long %>%
+  mutate(
+    Family = gsub("^(GT\\d+)_.*", "\\1", Sample),        # Extracts the family code: GT3, GT5, GT9
+    Passage = gsub("^GT\\d+_(G\\d+)_.*", "\\1", Sample), # Extracts the passage: G0, G10, etc.
+    Individual = Sample                                   # Keeps the original sample name as individual identifier
+  )
+
+# Calculate nucleotide diversity (π) for each site
+# Formula: π = 2 * allele_frequency * (1 - allele_frequency)
+subst_long <- subst_long %>%
+  mutate(pi_site = 2 * AltFreq * (1 - AltFreq))
+
+# Calculate mean π for each individual within each family
+pi_per_ind <- subst_long %>%
+  group_by(Family, Individual) %>%
+  summarize(pi_ind = mean(pi_site, na.rm = TRUE))
+
+# Calculate mean π per passage and individual
+pi_time <- subst_long %>%
+  group_by(Family, Individual, Passage) %>%
+  summarize(pi_ind = mean(pi_site, na.rm = TRUE))
+
+# Calculate mean π and standard deviation per family and passage
+pi_summary <- pi_time %>%
+  group_by(Family, Passage) %>%
+  summarize(
+    pi_mean = mean(pi_ind, na.rm = TRUE),  # Mean nucleotide diversity for the family at this passage
+    pi_sd = sd(pi_ind, na.rm = TRUE)       # Standard deviation for error ribbon
+  )
+
+# Clean up the Passage column and rename families
+pi_summary <- pi_summary %>%
+  mutate(
+    Passage = as.numeric(gsub("G", "", Passage)),        # Remove "G" and convert to numeric for proper ordering
+    Family = recode(Family,                              
+                    "GT3" = "FA",                        # Rename families for clarity
+                    "GT5" = "C",
+                    "GT9" = "NFA")
+  ) %>%
+  arrange(Passage)  # Order rows by passage
+
+# Plot nucleotide diversity (π) per passage for each family
+p_pi <- ggplot(pi_summary, aes(x = Passage, y = pi_mean, color = Family, group = Family)) +
+  geom_line() +  # Line connecting mean π values per family
+  geom_ribbon(aes(ymin = pi_mean - pi_sd, ymax = pi_mean + pi_sd, fill = Family), 
+              alpha = 0.2, color = NA) +  # Ribbon shows ±1 SD
+  ylab("Intra-individual mean nucleotide diversity (π)") +
+  xlab("Passage") +
+  # Set x-axis limits from 0 to 30 with breaks every 5 passages, custom labels
+  scale_x_continuous(limits = c(0, 30), 
+                     breaks = seq(0, 30, 5), 
+                     labels = c("P0", "P5", "P10", "P15", "P20", "P25", "P30")) +
+  theme_minimal() +
+  # Manual color mapping for lines
+  scale_color_manual(values = c("FA" = "#86a1da", "C" = "#f8c284", "NFA" = "#98d881", name = "Family")) +
+  # Manual fill mapping for ribbons
+  scale_fill_manual(values = c("FA" = "#86a1da", "C" = "#f8c284", "NFA" = "#98d881", name = "Family"))
 
