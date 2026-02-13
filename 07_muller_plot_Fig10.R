@@ -279,7 +279,7 @@ m.plot_GT3 <- Muller.plot(attributes = attri, population.data = mat_muller_GT3,
 
 
 
-mat_muller_GT5 <- matrix(data=0,nrow=5,ncol=6)
+mat_muller_GT5 <- matrix(data=0,nrow=5,ncol=5)
 colnames(mat_muller_GT5) <- c( "0", "5", "10", "15","18")
 row.names(mat_muller_GT5) <- c("MO", "BR", "ARC", "LEU", "?")
 
