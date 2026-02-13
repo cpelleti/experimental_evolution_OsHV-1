@@ -211,6 +211,9 @@ for (i in 1:nrow(dat)){
 sampleIDs<-colnames(dat[1:96])
 splits <- unlist(strsplit(sampleIDs, "[_]"))
 fam_oyster <- factor(splits[grep("GT",splits)])
+levels(fam_oyster)[levels(fam_oyster) == "GT3"] <- "FA"
+levels(fam_oyster)[levels(fam_oyster) == "GT5"] <- "C"
+levels(fam_oyster)[levels(fam_oyster) == "GT9"] <- "NFA"
 splits <- splits[-grep("T",splits)]
 generation <- as.factor(splits[grep("G",splits)])
 generation <- as.numeric(splits[grep("G",splits)] %>% strsplit(., "G") %>% unlist(.) %>% .[grep("[0-9]",.)])
