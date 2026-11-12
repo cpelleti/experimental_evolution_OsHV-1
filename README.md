@@ -4,7 +4,7 @@
 This project was developed to investigate the genomic evolution and selection dynamics of OsHV-1 µVar during experimental infections in oyster populations. The accompanying R scripts implement a complete workflow from statistical analysis of mortality and viral load across generations, to de novo genome assembly, variant calling, and detailed intra-individual Single Nucleotide Variant (iSNV) analyses. The code enables reproducible reconstruction of viral consensus genomes, identification of genomic variability, analysis of substitution patterns, principal component analyses for population structure, detection of selection signatures, and visualization of genotype frequencies using Muller plots. This workflow is designed for large-scale genomic datasets and allows researchers to track viral evolution across host populations and generations. All raw sequencing data are publicly available in NCBI SRA under Bioproject PRJNA1216400, This framework can be applied to study evolutionary dynamics, viral adaptation, and population genomics in other pathogen-host systems.
 
 ## Description
-This repository contains scripts that have been used to performed analysis of experimental evolution datas from Pelletier et al, 2025.\
+This repository contains scripts that have been used to performed analysis of experimental evolution datas from Pelletier et al, 2026.\
 Raw reads are available at http://www.ncbi.nlm.nih.gov/bioproject/PRJNA1216400. NCBI:BioProject: PRJNA1216400.
 
 ## Prerequisites
@@ -76,12 +76,12 @@ Scripts are designed to be run sequentially, starting from raw data preprocessin
 | ------------- | ------------- |
 | test_datas/   | Contains example datasets for testing the scripts and reproducing the analyses.  |
 | 01_variant_calling.sh  | Shell script for variant calling pipeline, including read mapping and Freebayes variant detection.  |
-| 02_stats_mortalities_viralLoad_Fig3.R   | R script for statistical analysis of mortality and viral load across oyster generations and populations, and generation of Figure 3.  |
-| 03_stats_ts_tv_Fig5.R  | R script to analyze transition/transversion ratios, substitution patterns, and generate Figure 5.  |
-| 04_Genomic_selection_detection_Fig6-7-8.R   | R script for detecting selection signatures across viral generations and populations, generating Figures 6, 7, and 8.  |
-| 05_CMH.R  | R script running the adapted Cochran–Mantel–Haenszel test to identify consistent allele-frequency shifts across generations. Applies FDR correction, and outputs Manhattan-style plots with significant loci and ORF annotations. |
-| 06_allelic_trajectories_Fig9.R | R script to compute allelic frequency trajectories and generate Figure 9. |
-| 07_muller_plot_Fig10.R  | R script to visualize genotype emergence and lineage dynamics using Muller plots (Figure 10). |
+| 02_stats_mortalities_viralLoad_Fig3_FigS2.R   | R script for statistical analysis of mortality and viral load across oyster generations and populations, and generation of Figure 3.  |
+| 03_stats_ts_tv_Fig4_FigS3.R  | R script to analyze transition/transversion ratios, substitution patterns, and generate Figure 4.  |
+| 04_Genomic_selection_detection_Fig5_FigS1.R   | R script for detecting selection signatures across viral generations and populations, generating Figures 5.  |
+| 05_CMH_Fig6.R  | R script running the adapted Cochran–Mantel–Haenszel test to identify consistent allele-frequency shifts across generations. Applies FDR correction, and outputs Manhattan-style plots with significant loci and ORF annotations. |
+| 06_allelic_trajectories_Fig7.R | R script to compute allelic frequency trajectories and generate Figure 7. |
+| 07_muller_plot_Fig8.R  | R script to visualize genotype emergence and lineage dynamics using Muller plots (Figure 8). |
 
 **File formats:**\
 &nbsp;&nbsp;&nbsp;&nbsp;.R – R scripts, editable in RStudio or any text editor.\
@@ -96,7 +96,7 @@ This repository provides scripts and pipelines for the statistical and genomic a
 **1. Statistical analysis of mortality and viral load**
 
 Input: Mortality and viral load data across oyster populations and generations.\
-Execution: script 02_stats_mortalities_viralLoad_Fig3.R\
+Execution: script 02_stats_mortalities_viralLoad_Fig3_FigS2.R\
 Output: Graphical representations of mortality and viral load; ANOVA tables showing differences among populations and generations.
 
 **2. Assembly of viral NR-genomes**
@@ -115,21 +115,21 @@ Output: VCF files containing intra-individual Single Nucleotide Variants (iSNVs)
 **4. Substitution analysis and clustering**
 
 Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
-Execution: script 03_stats_ts_tv_Fig5.R\
+Execution: script 03_stats_ts_tv_Fig4_FigS3.R\
 Analyze transitions/transversions with BCFtools stats ; Average substitution counts per generation and population ; Visualize using ggplot2 ; Perform PCA on iSNV frequencies to explore sample clustering using factoextra in R.\
 Output: Plots showing substitution patterns, ts/tv ratios, and sample clustering across oyster populations.
 
 **5. Selection detection**
 
 Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
-Execution: scripts 04_Genomic_selection_detection_Fig6-7-8.R ; 05_CMH.R and 06_allelic_trajectories_Fig9.R\
+Execution: scripts 04_Genomic_selection_detection_Fig5_FigS1.R ; 05_CMH_Fig6.R and 06_allelic_trajectories_Fig7.R\
 Compare allele frequencies between initial and evolved generations ; Apply Cochran-Mantel-Haenszel (CMH) tests using ACER in R ; Adjust p-values using FDR and visualize significant iSNVs with Manhattan plots.\
 Output: iSNVs under selection and their allele frequency trajectories across generations.
 
 **6. Genotype proportion visualization**
 
 Input: VCF files containing filtered intra-individual Single Nucleotide Variants (iSNVs).\
-Execution: script 07_muller_plot_Fig10.R\
+Execution: script 07_muller_plot_Fig8.R\
 Assign iSNVs to their origin based on G0 viral inoculum ; Group variants by geographic origin and visualize relative abundances using MullerPlot in R.\
 Output: Muller plots showing lineage emergence and dynamics throughout the experimental evolution.
 
@@ -137,7 +137,7 @@ Output: Muller plots showing lineage emergence and dynamics throughout the exper
 This work is licensed under the MIT License.
 
 ## Contact
-For help with this bioinformatics project, please reach out to Camille Pelletier (camille.pelletier@ifremer.fr), Maude Jacquot (maude.jacquot@ifremer.fr), Germain Chevignon (germain.chevignon@ifremer.fr), or Benjamin Morga (benjamin.morga@ifremer.fr). They can assist with any questions, troubleshooting, or clarifications. Feel free to contact them directly or through the appropriate communication channels.
+For help with this bioinformatics project, please reach out to Camille Pelletier (cpelletier376@gmail.com), Maude Jacquot (maude.jacquot@ifremer.fr), Germain Chevignon (germain.chevignon@ifremer.fr), or Benjamin Morga (benjamin.morga@ifremer.fr). They can assist with any questions, troubleshooting, or clarifications. Feel free to contact them directly or through the appropriate communication channels.
 
 ## Authors and acknowledgment
 Authors : Camille Pelletier, Nicole Faury, Mickaël Mege, Lionel Dégremont, Maelle Hattinguais, Jeremie Vidal-Dupiol, Germain Chevignon, Maude Jacquot, Benjamin Morga.
