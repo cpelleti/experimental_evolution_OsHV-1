@@ -6,6 +6,7 @@
 
 '%!in%' <- function(x,y)!('%in%'(x,y))
 options( "digits"=3)
+library("patchwork")
 
 #------------------------------------------------------------------import datas-------------------------------------------------------------------------------
 
@@ -155,16 +156,14 @@ medianaf<- cbind(gens, medianaf, rep("medianaf", 7))
 colnames(medianaf) <- c("gen", "medianaf", "pos")
 
 #------------------------------------------------------------------plot top snps as allellic trajectories, replicate 1-----------------------------------------------------
-p <- ggplot() +
+figure7A <- ggplot() +
   geom_line(data=df_R1, aes(x=gen, y=freq, group=pos),colour = "blue", alpha=0.3) + 
   theme_bw()+ ylim(0,1)+
   theme(legend.position="none") + 
   labs(y="Allele Frequency", x="Generation")+
   geom_line(data = medianaf,aes(x=gen, y=medianaf, group=NA), col = "red", linewidth=1)
 
-
-
-p
+figure7A
 
 #------------------------------------------------------------------process datas, replicate 2------------------------------------------------------------------------------
 #-------------1 - allelic trajectories on the global artifical NR-consensus (only for top snps)
@@ -199,17 +198,29 @@ medianaf<- cbind(gens, medianaf, rep("medianaf", 7))
 colnames(medianaf) <- c("gen", "medianaf", "pos") 
 
 #------------------------------------------------------------------plot top snps as allellic trajectories, replicate 2-----------------------------------------------------
-p <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
+figure7B <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
   geom_line(colour = "blue", alpha=0.3) + 
   theme_bw()+ ylim(0,1)+
   theme(legend.position="none") + 
   labs(y="Allele Frequency", x="Generation")+
   geom_line(data = medianaf,aes(x=gen, y=medianaf, group=NA), col = "red", linewidth=1)
 
+figure7B
 
 
-p
-
+Figure_global7 <- wrap_plots(
+  figure7A,
+  figure7B,
+  ncol = 2, nrow=1,
+  heights = c(1, 1)
+)
+ggsave(
+  "Figure7.pdf",
+  plot = Figure_global7,
+  width = 12,
+  height = 8,
+  units = "in"
+)
 
 #------------------------------------------------------------------plot top snps as allellic trajectories, in specific regions with high snps density-----------------------------------------------------
 ######################allelic trajectories between 50000 and 80000 pb #################################
@@ -695,3 +706,4 @@ p <- ggplot(data=df_R2, aes(x=gen, y=freq, group=pos)) +
 
 
 p
+
