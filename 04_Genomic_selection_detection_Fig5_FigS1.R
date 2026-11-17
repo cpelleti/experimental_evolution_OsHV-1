@@ -234,11 +234,11 @@ row.names(pcadata_explain)<-c("Family", "Generation", "Replicate")
 
 pca.res <- prcomp(pcadata, retx=TRUE, center = TRUE, scale. =TRUE)
 pca.var<-get_eigenvalue(pca.res)
-poids_var_x <- acp1$rotation[,1]
+poids_var_x <- pca.res$rotation[,1]
 
-poids_var_y <- acp1$rotation[,2]
+poids_var_y <- pca.res$rotation[,2]
 
-vecnames <- rownames(acp1$rotation)
+vecnames <- rownames(pca.res$rotation)
 
 data_pca <- as.data.frame(pca.res$x)
 NbClust(data_pca[,1:2], method = 'kmeans', index = 'all')$Best.nc
@@ -309,6 +309,13 @@ p1_gen_fam<-ggplot(as.data.frame(pca_res.tmp),aes(x=PC1,y=PC2, col=fam_oyster, s
   ylab(paste("PC2(",round(pca.var$variance.percent[2], 2),"%)",sep=""))+ theme_classic()
 
 p1_gen_fam
+ggsave(
+  "Figure5.pdf",
+  plot = p1_gen_fam,
+  width = 8,
+  height = 12,
+  units = "in"
+)
 
 # Extract variables coordinate (loadings)
 loadings <- as.data.frame(pca.res$rotation[, 1:2])  # PC1 et PC2
@@ -344,24 +351,56 @@ p1_gen_fam_with_arrows <- ggplot(as.data.frame(pca.res$x), aes(x = PC1, y = PC2,
 
 
 #------------------------------------------------------------------plot datas as 25 PCA------------------------------------------------------------------------------
+pdf(
+  "FigureS1.pdf",
+  width = 12,
+  height = 12
+)
 
-layout.matrix <- matrix(c(seq(1,25, by=1)), byrow = TRUE, nrow = 5, ncol = 5)
+par(
+  mfrow = c(6, 4),
+  mar = c(2.5, 2.5, 1, 0.5),
+  mgp = c(1.5, 0.5, 0),
+  cex.axis = 0.7,
+  cex.lab = 0.8
+)
 
-layout(mat = layout.matrix,
-       heights =  c(rep(1,25),0,1,1))
-
-layout.show(25)
-#for (k in 1:(ncol(pca_res.tmp)-4)){
-  for (k in 1:24){
-  #par(new=TRUE, mar=c(0,0,0,0))
-    par(mar = c(0.5,0.5,0.5,0.5))
-  PC1<- pca_res.tmp[k]
-  print(PC1)
-  PC2 <- pca_res.tmp[k+1]
-  print(PC2)
+for (k in 1:24) {
   
+  plot(
+    pca_res.tmp[, k],
+    pca_res.tmp[, k + 1],
+    
+    col = scales::alpha(
+      pca_res.tmp$V98,
+      pca_res.tmp$V99
+    ),
+    
+    xaxt = "n",
+    yaxt = "n",
+    
+    pch = pca_res.tmp$V100,
+    
+    xlab = paste0(
+      colnames(pca_res.tmp)[k],
+      " (",
+      round(pca.var$variance.percent[k], 2),
+      "%)"
+    ),
+    
+    ylab = paste0(
+      colnames(pca_res.tmp)[k + 1],
+      " (",
+      round(pca.var$variance.percent[k + 1], 2),
+      "%)"
+    )
+  )
   
-  FigureS1 <- plot(pca_res.tmp[,k],pca_res.tmp[,k+1], col=alpha(pca_res.tmp$V98,pca_res.tmp$V99),xaxt='n',yaxt='n', pch=pca_res.tmp$V100, xlab=paste(colnames(pca_res.tmp)[k]," (",round(pca.var$variance.percent[k], 2),"%)",sep=""), ylab=paste(colnames(pca_res.tmp)[k+1]," (",round(pca.var$variance.percent[k+1], 2),"%)",sep=""))
- 
-
+  # Add axes
+  axis(1, cex.axis = 0.7)
+  axis(2, cex.axis = 0.7)
 }
+
+dev.off()
+
+
