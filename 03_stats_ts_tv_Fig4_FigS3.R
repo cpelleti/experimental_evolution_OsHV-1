@@ -28,6 +28,7 @@ subst_table<- read.csv2("./data_frame_allelic_frequencies_indiduals.csv")
 
 #------------------------------------------------------------------prepare datas------------------------------------------------------------------------------
 
+
 subst_table<- subst_table[subst_table$TYPE == "snp",]
 
 #determine if snps are ancestral or de novo
@@ -722,9 +723,32 @@ p_tstv_denovo<- ggplot(mat_tstv_ratio_denovo, aes(x = Fam_Gen, y = ratio, group=
 
 #------------------------------------------------------------------plot final figure 4 ------------------------------------------------------------------------------
 
-Figure4 <- (p_moy_tstv_ancestral / p_tstv_ancestral) / (p_moy_tstv_denovo / p_tstv_denovo) 
-Figure4
+theme_compact <- theme(
+  plot.margin = margin(2, 2, 2, 2, unit = "pt")
+)
+p1 <- p_moy_tstv_ancestral + theme_compact
+p2 <- p_tstv_ancestral + theme_compact
+p2 <- p2 +
+  scale_y_continuous(breaks = seq(0, 1.4, 0.2))
+p3 <- p_moy_tstv_denovo + theme_compact
+p4 <- p_tstv_denovo + theme_compact
+p4 <- p4 +
+  scale_y_continuous(breaks = seq(0, 2.4, 0.4))
 
+Figure4 <- wrap_plots(
+  p1, p2, p3, p4,
+  ncol = 1,
+  heights = c(1.5, 0.8, 1.5, 0.8)
+)
+
+Figure4
+ggsave(
+  "Figure4.pdf",
+  plot = Figure4,
+  width = 8,
+  height = 12,
+  units = "in"
+)
 
 #------------------------------------------------------------------plot substituions type for each replicates (Supplementary figure 4)------------------------------------------------------------------------------
 
@@ -1733,9 +1757,15 @@ p_denovo_R1    <- p_denovo_R1    + ggtitle("De novo R1")
 p_ancestral_R2 <- p_ancestral_R2 + ggtitle("Ancestral R2")
 p_denovo_R2    <- p_denovo_R2    + ggtitle("De novo R2")
 
-figure_S2 <- (p_ancestral_R1 / p_denovo_R1)  | (p_ancestral_R2 / p_denovo_R2) 
-figure_S2 
-
+figure_S3 <- (p_ancestral_R1 / p_denovo_R1)  | (p_ancestral_R2 / p_denovo_R2) 
+figure_S3 
+ggsave(
+  "FigureS3.pdf",
+  plot = figure_S3,
+  width = 15,
+  height = 12,
+  units = "in"
+)
 
 
 #------------------------------------------------------------------compute pi over time for each family (Supplementary figure 4)------------------------------------------------------------------------------
@@ -1743,7 +1773,7 @@ figure_S2
 
 # Pivot all sample columns into two columns: 'Sample' and 'AltFreq'
 # This converts the data from wide format (one column per sample) to long format
-subst_long <- subst_table %>%
+subst_long <- subst_table[0:102] %>%
   pivot_longer(cols = starts_with("GT"), 
                names_to = "Sample", 
                values_to = "AltFreq")
@@ -1808,3 +1838,10 @@ FigureS4 <- ggplot(pi_summary, aes(x = Passage, y = pi_mean, color = Family, gro
   scale_fill_manual(values = c("FA" = "#86a1da", "C" = "#f8c284", "NFA" = "#98d881", name = "Family"))
 
 FigureS4
+ggsave(
+  "FigureS4.pdf",
+  plot = FigureS4,
+  width = 8,
+  height = 12,
+  units = "in"
+)
