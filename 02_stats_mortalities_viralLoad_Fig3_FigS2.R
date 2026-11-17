@@ -17,7 +17,7 @@ ipak <- function(pkg){
 }
 
 ipak(unique(
-  c( "ggplot2", "tidyr","ggpubr","tidyverse","rstatix","dplyr") 
+  c( "ggplot2", "tidyr","ggpubr","tidyverse","rstatix","dplyr","grid" ,"ggpmisc", "corrplot", "patchwork") 
 ) )
 
 
@@ -86,6 +86,7 @@ bxp <- ggboxplot(
   mat_mortalities, x = "Fam", y = "Morta",
   color = "Fam", palette = "jco"
 )
+
 bxp
 
 
@@ -310,7 +311,7 @@ plotSA1 <- ggplot() +
     axis.text.x = element_text(angle = 0, vjust = 0.5)
   )
 
-x11()
+
 plotSA1
 
 #----------------------------------analysis of global co-variance of mortality rates --------------------------------
@@ -344,8 +345,77 @@ plotSA2 <- corrplot(cor_global, method = "color", addCoef.col = "black", number.
          col = colorRampPalette(c("snow4", "lightgoldenrodyellow", "plum4"))(200), 
          title = "", mar=c(0,0,2,0))
 
+# Récupérer les données du corrplot
+df_corr <- plotSA2$corrPos
+
+# Recréer la matrice de corrélation
+# Reproduire exactement ta palette
+palette_corr <- colorRampPalette(
+  c("snow4", "lightgoldenrodyellow", "plum4")
+)(200)
+
+# Créer le corrplot avec ggplot2
+plotSA2_gg <- ggplot(
+  df_corr,
+  aes(x = xName, y = yName, fill = corr)
+) +
+  geom_tile(
+    color = "white",
+    linewidth = 0.5
+  ) +
+  geom_text(
+    aes(label = sprintf("%.2f", corr)),
+    color = "black",
+    size = 3
+  ) +
+  scale_fill_gradientn(
+    colours = palette_corr,
+    limits = c(-1, 1),
+    name = "Correlation"
+  ) +
+  scale_x_discrete(
+    limits = colnames(cor_global)
+  ) +
+  scale_y_discrete(
+    limits = rev(rownames(cor_global))
+  ) +
+  coord_fixed() +
+  theme_minimal() +
+  theme(
+    axis.title = element_blank(),
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1,
+      color = "black"
+    ),
+    axis.text.y = element_text(color = "black"),
+    panel.grid = element_blank(),
+    plot.margin = margin(2, 2, 2, 2)
+  )
 
 
+plotSA2_gg <- plotSA2_gg +
+  coord_cartesian() +
+  theme(
+    plot.margin = margin(5, 5, 5, 5)
+  )
+
+# Assembler les deux graphiques verticalement
+Figure_supp <- wrap_plots(
+  plotSA1,
+  plotSA2_gg,
+  ncol = 1,
+  heights = c(1.3, 1)
+)
+
+Figure_supp
+ggsave(
+  "FigureS2.pdf",
+  plot = figure_supp,
+  width = 8,
+  height = 12,
+  units = "in"
+)
 ###################################### VIRAL LOAD ###############################################
 
 #------------------------------------------------------------------prepare datas--------------------------------------------------------------------------
@@ -399,17 +469,25 @@ res.aov2
 
 
 
-anova_mat<- rbind(res.aov1, res.aov2, res.aov3, res.aov4)
+anova_mat<- rbind(res.aov1, res.aov2)
 anova_mat[1,1] <- "Mortalities ~ oyster populations"
 anova_mat[2,1] <- "Mortalities ~ infection generations"
-anova_mat[3,1] <- "Viral DNA copy number ~ oyster populations"
-anova_mat[4,1] <- "Viral DNA copy number ~ infection generations"
-
+anova_mat[3,1] <- "Mortalities ~ oyster populations*infection generations"
+anova_mat[4,1] <- "Viral DNA copy number ~ oyster populations"
+anova_mat[5,1] <- "Viral DNA copy number ~ infection generations"
+anova_mat[6,1] <- "Viral DNA copy number ~ oyster populations*infection generations"
 anova_mat
 #---------------------------------------------------------------plot global--------------------------------------------------------------
 
-figure_global <- plotA | plotB
+figure_global <- plotA / plotB +
+  plot_layout(heights = c(1, 1.5))
 figure_global
 
-
+ggsave(
+  "Figure3.pdf",
+  plot = figure_global,
+  width = 8,
+  height = 12,
+  units = "in"
+)
 
