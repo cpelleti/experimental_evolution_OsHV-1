@@ -359,12 +359,44 @@ mat_muller_GT9[5,7] <- length(origin$G28[origin$G28 >0])
 
 
 ##------------------------------plot datas as muller plot----------------------------------------------------
-m.plot_GT3 <- Muller.plot(attributes = attri, population.data = mat_muller_GT3,
-                          data.method = "table", time.interval.method = "linear",mgp=c(2,0.5,0))
-m.plot_GT5 <- Muller.plot(attributes = attri, population.data = mat_muller_GT5,
-                          data.method = "table", time.interval.method = "linear",mgp=c(2,0.5,0))
-m.plot_GT9 <- Muller.plot(attributes = attri, population.data = mat_muller_GT9,
-                          data.method = "table", time.interval.method = "linear",mgp=c(2,0.5,0))
+pdf(
+  "Figure8.pdf",
+  width = 15,
+  height = 5
+)
 
+layout(
+  matrix(1:3, nrow = 1),
+  widths = c(1, 1, 1)
+)
 
+par(
+  mar = c(3, 3, 2, 1),
+  mgp = c(2, 0.5, 0)
+)
 
+Muller.plot(
+  attributes = attri,
+  population.data = mat_muller_GT3,
+  data.method = "table",
+  time.interval.method = "linear"
+)
+title(main = "FA", font.main = 2, cex.main = 1.3)
+
+Muller.plot(
+  attributes = attri,
+  population.data = mat_muller_GT5,
+  data.method = "table",
+  time.interval.method = "linear"
+)
+title(main = "C", font.main = 2, cex.main = 1.3)
+
+Muller.plot(
+  attributes = attri,
+  population.data = mat_muller_GT9,
+  data.method = "table",
+  time.interval.method = "linear"
+)
+title(main = "NFA", font.main = 2, cex.main = 1.3)
+
+dev.off()
