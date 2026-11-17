@@ -207,7 +207,7 @@ for (i in 1:input_rep){
   nb_obs <- dim(af)[1]
   for(j in 1:NB_trials){
     set.seed(off)
-    ind <- sample(x = 1:nb_obs, size = 476)
+    ind <- sample(x = 1:nb_obs, size = 464)
     ne <- rbind(ne, 
                 data.frame(trial = j,
                            ne = estimateNe(p0 = af[ind,colnames(af)[1]], pt = af[ind,colnames(af)[2]], 
@@ -360,7 +360,7 @@ p1_GT9<-ggplot(p.values_GT9,
 
 p1_GT9
 
-figure <- ggarrange(p1_GT3, p1_GT5, p1_GT9 + font("x.text", size = 10),
+figure6 <- ggarrange(p1_GT3, p1_GT5, p1_GT9 + font("x.text", size = 10),
                     ncol = 1, nrow = 3)
 
 
@@ -383,12 +383,23 @@ i=0
 for (i in 1:nrow(signif_CMH_GT9)){
   line_i <- signif_CMH_GT9[i,]
   pos_i <- line_i$pos
-  if (line_i$Function != "intergenic" ){
+  orf_func_i <- orf_func[
+    orf_func$start <= pos_i &
+      orf_func$stop >= pos_i,
+  ]
+  if (nrow(orf_func_i) == 0) {
+    Function <-"intergenic"
+  }
+    else if (nrow(orf_func_i) > 0)
+      if (orf_func_i$ORF == "stemloop")
+      {Function <- "intergenic"}
+        else {Function <- orf_func_i$Function }
+
+  if (Function != "intergenic" ){
     orf_func_i <- orf_func[orf_func$start < pos_i & orf_func$stop > pos_i,]
     signif_CMH_GT9$color[i] <- orf_func_i$Colors
-  }else if (line_i$Function == "intergenic")
-    signif_CMH_GT9$color[i] <- "#FFCC99"
-}
+  }else if (Function == "intergenic"){
+    signif_CMH_GT9$color[i] <- "#FFCC99"}}
 
 
 
@@ -404,8 +415,15 @@ p1_GT9_signif<- ggplot()+
   geom_hline(yintercept = -log10(0.05), col="red", linetype=2)+
   labs(title = "NFA", x="position", y ="-log10(FDR)") + theme_classic() + ylim(-0.2,2)
 
-figure <- ggarrange(p1_GT3, p1_GT5, p1_GT9_signif + font("x.text", size = 10),
+figure6 <- ggarrange(p1_GT3, p1_GT5, p1_GT9_signif + font("x.text", size = 10),
                     ncol = 1, nrow = 3)
 
-figure
+figure6
+ggsave(
+  "Figure6.pdf",
+  plot = figure6,
+  width = 8,
+  height = 12,
+  units = "in"
+)
 
